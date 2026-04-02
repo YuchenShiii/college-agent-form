@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>美本申请信息收集表</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
+      background: #f0f4f8;
+      color: #1a202c;
+      min-height: 100vh;
+    }
+    .hero {
+      background: linear-gradient(135deg, #1F3864 0%, #2E75B6 100%);
+      color: white;
+      padding: 48px 24px 40px;
+      text-align: center;
+    }
+    .hero h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+    .hero p { font-size: 15px; opacity: 0.85; line-height: 1.6; }
+    .container { max-width: 720px; margin: 0 auto; padding: 32px 16px 80px; }
+    .section { background: white; border-radius: 16px; padding: 28px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0.06); }
+    .section-title { font-size: 16px; font-weight: 700; color: #2E75B6; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #D6E4F0; display: flex; align-items: center; gap: 8px; }
+    .form-group { margin-bottom: 18px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px; }
+    label { display: block; font-size: 13px; font-weight: 600; color: #4a5568; margin-bottom: 6px; }
+    label .req { color: #e53e3e; margin-left: 2px; }
+    label .opt { color: #a0aec0; font-weight: 400; font-size: 12px; margin-left: 4px; }
+    input, select, textarea { width: 100%; padding: 10px 14px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 14px; color: #1a202c; background: #f7fafc; transition: border-color 0.2s, box-shadow 0.2s; outline: none; font-family: inherit; }
+    input:focus, select:focus, textarea:focus { border-color: #2E75B6; background: white; box-shadow: 0 0 0 3px rgba(46,117,182,0.12); }
+    textarea { resize: vertical; min-height: 90px; line-height: 1.6; }
+    input::placeholder, textarea::placeholder { color: #a0aec0; }
+    .activity-block { background: #f7fafc; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 16px; margin-bottom: 12px; }
+    .activity-block .activity-label { font-size: 12px; font-weight: 700; color: #2E75B6; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; }
+    .hint { font-size: 12px; color: #718096; margin-top: 4px; line-height: 1.5; }
+    .submit-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, #1F3864, #2E75B6); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; transition: opacity 0.2s, transform 0.1s; letter-spacing: 0.02em; }
+    .submit-btn:hover { opacity: 0.92; }
+    .submit-btn:active { transform: scale(0.99); }
+    .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .success-card { display: none; background: white; border-radius: 16px; padding: 48px 28px; text-align: center; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+    .success-card .icon { font-size: 56px; margin-bottom: 16px; }
+    .success-card h2 { font-size: 22px; color: #1F3864; margin-bottom: 8px; }
+    .success-card p { color: #718096; font-size: 14px; line-height: 1.7; }
+    .error-msg { display: none; background: #fff5; border: 1.5px solid #fed7d7; border-radius: 8px; padding: 12px 16px; color: #c53030; font-size: 13px; margin-top: 12px; }
+    @media (max-width: 480px) { .form-row { grid-template-columns: 1fr; } .hero h1 { font-size: 22px; } .section { padding: 20px 16px; } }
+  </style>
+</head>
+<body>
+<div class="hero">
+  <h1>🎓 美本申请信息收集表</h1>
+  <p>请如实填写，信息将由顾问保密处理<br/>用于制定你的个性化申请方案</p>
+</div>
+<div class="container">
+  <form id="appForm">
+    <div class="section">
+      <div class="section-title">👤 基本信息</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>姓名 <span class="req">*</span></label>
+          <input type="text" name="name" placeholder="你的中文姓名" required />
+        </div>
+        <div class="form-group">
+          <label>微信号 <span class="req">*</span></label>
+          <input type="text" name="wechat" placeholder="方便顾问联系你" required />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>就读高中 <span class="req">*</span></label>
+        <input type="text" name="school" placeholder="学校全称" required />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>当前年级 <span class="req">*</span></label>
+          <select name="grade" required>
+            <option value="">请选择</option>
+            <option>10年级</option>
+            <option>11年级</option>
+            <option>12年级</option>
+            <option>已毕业/Gap Year</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>计划入学年份 <span class="req">*</span></label>
+          <select name="enrollYear" required>
+            <option value="">请选择</option>
+            <option>2025 Fall</option>
+            <option>2026 Fall</option>
+            <option>2027 Fall</option>
+            <option>2028 Fall</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">📊 学术成绩</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>GPA <span class="req">*</span></label>
+          <input type="text" name="gpa" placeholder="例：3.85" required />
+        </div>
+        <div class="form-group">
+          <label>GPA 满分制 <span class="req">*</span></label>
+          <select name="gpaScale" required>
+            <option value="">请选择</option>
+            <option>4.0</option>
+            <option>5.0</option>
+            <option>百分制（100）</option>
+            <option>其他</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>SAT 总分 <span class="opt">（没考填 N/A）</span></label>
+          <input type="text" name="sat" placeholder="例：1480" />
+        </div>
+        <div class="form-group">
+          <label>SAT Math 分项</label>
+          <input type="text" name="satMath" placeholder="例：770" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>ACT Composite <span class="opt">（没考填 N/A）</span></label>
+          <input type="text" name="act" placeholder="例：34" />
+        </div>
+        <div class="form-group">
+          <label>托福总分 <span class="opt">（没考填 N/A）</span></label>
+          <input type="text" name="toefl" placeholder="例：108" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>AP / IB 课程及成绩 <span class="opt">（选填）</span></label>
+        <textarea name="ap" placeholder="例：AP Calculus BC: 5, AP Chemistry: 4, IB HL Math: 7"></textarea>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">🎯 申请意向</div>
+      <div class="form-group">
+        <label>意向专业 <span class="req">*</span><span class="opt">（最多填3个，用逗号隔开）</span></label>
+        <input type="text" name="major" placeholder="例：Computer Science, Applied Math" required />
+      </div>
+      <div class="form-group">
+        <label>地区偏好 <span class="req">*</span></label>
+        <select name="region" required>
+          <option value="">请选择</option>
+          <option>不限</option>
+          <option>东北（New England / Mid-Atlantic）</option>
+          <option>中西部（Midwest）</option>
+          <option>南部（South）</option>
+          <option>西部（West Coast）</option>
+          <option>东北 + 西部</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>年学费预算（美元）<span class="req">*</span></label>
+          <select name="budget" required>
+            <option value="">请选择</option>
+            <option>3万以下</option>
+            <option>3-5万</option>
+            <option>5-7万</option>
+            <option>不限</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>是否需要奖学金 <span class="req">*</span></label>
+          <select name="scholarship" required>
+            <option value="">请选择</option>
+            <option>是，Need-based 财援</option>
+            <option>是，Merit 奖学金</option>
+            <option>两者都希望申请</option>
+            <option>否，不需要</option>
+            <option>待定</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>录取倾向 <span class="req">*</span></label>
+        <select name="tendency" required>
+          <option value="">请选择</option>
+          <option>冲刺为主（愿意承担风险，追求名校）</option>
+          <option>稳妥为主（保底优先）</option>
+          <option>均衡（Dream + Target + Safety 各占一部分）</option>
+        </select>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">🏆 课外活动 & 荣誉</div>
+      <p class="hint" style="margin-bottom:16px;">填写你最重要的 3 个活动，格式：活动名称 + 一句话说明你做了什么 + 每周投入时长</p>
+      <div class="activity-block">
+        <div class="activity-label">活动 1（最重要）</div>
+        <input type="text" name="activity1" placeholder="例：Model UN 主席 | 组织了全校 200 人参与的年度会议 | 每周 8 小时" />
+      </div>
+      <div class="activity-block">
+        <div class="activity-label">活动 2</div>
+        <input type="text" name="activity2" placeholder="例：校管弦乐团首席小提琴 | 连续 4 年 | 每周 10 小时" />
+      </div>
+      <div class="activity-block">
+        <div class="activity-label">活动 3</div>
+        <input type="text" name="activity3" placeholder="例：自主研究项目 | 用 Python 分析本地空气质量数据 | 暑假全职" />
+      </div>
+      <div class="form-group" style="margin-top:4px;">
+        <label>获得过的奖项 / 荣誉 <span class="opt">（选填）</span></label>
+        <textarea name="awards" placeholder="例：AMC 10 Top 5%，全国英语演讲比赛二等奖，校长奖学金获得者"></textarea>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">✍️ 文书素材 <span style="font-weight:400;font-size:13px;color:#718096;">（选填，越真实越好）</span></div>
+      <div class="form-group">
+        <label>你最骄傲的一件事</label>
+        <textarea name="proudest" placeholder="可以是任何事，不必是'高大上'的。用自己的话说，像跟朋友聊天一样。"></textarea>
+      </div>
+      <div class="form-group">
+        <label>为什么选择这个专业？</label>
+        <textarea name="whyMajor" placeholder="是什么经历让你对这个方向感兴趣？有没有具体的触发时刻？"></textarea>
+      </div>
+      <div class="form-group">
+        <label>你与众不同的地方是什么？</label>
+        <textarea name="unique" placeholder="你的朋友或家人会怎么描述你？你有什么独特的视角或经历？"></textarea>
+      </div>
+    </div>
+    <button type="submit" class="submit-btn" id="submitBtn">提交信息 →</button>
+    <div class="error-msg" id="errorMsg"></div>
+  </form>
+  <div class="success-card" id="successCard">
+    <div class="icon">🎉</div>
+    <h2>提交成功！</h2>
+    <p>你的信息已经收到了。<br/>顾问会在 1-2 个工作日内联系你，<br/>开始制定你的个性化申请方案。</p>
+  </div>
+</div>
+<script>
+  document.getElementById('appForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    const errorMsg = document.getElementById('errorMsg');
+    btn.disabled = true;
+    btn.textContent = '提交中...';
+    errorMsg.style.display = 'none';
+    const formData = new FormData(this);
+    const data = {};
+    formData.forEach((value, key) => { data[key] = value; });
+    try {
+      const res = await fetch('/api/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      const result = await res.json();
+      if (result.success) {
+        document.getElementById('appForm').style.display = 'none';
+        document.getElementById('successCard').style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        throw new Error(result.error || '提交失败');
+      }
+    } catch (err) {
+      errorMsg.textContent = '提交出错：' + err.message + '，请稍后重试或联系顾问。';
+      errorMsg.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = '提交信息 →';
+    }
+  });
+</script>
+</body>
+</html>
