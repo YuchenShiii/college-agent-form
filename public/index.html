@@ -6,56 +6,63 @@
   <title>美本申请信息收集表</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
-      background: #f0f4f8;
-      color: #1a202c;
-      min-height: 100vh;
+    :root {
+      --bg: #0d0f14; --surface: #161a23; --border: #252a36;
+      --input-bg: #1c2030; --accent: #6c8ef5; --accent2: #a78bfa;
+      --text: #e2e8f0; --muted: #64748b; --error: #f87171;
     }
-    .hero {
-      background: linear-gradient(135deg, #1F3864 0%, #2E75B6 100%);
-      color: white;
-      padding: 48px 24px 40px;
-      text-align: center;
-    }
-    .hero h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
-    .hero p { font-size: 15px; opacity: 0.85; line-height: 1.6; }
-    .container { max-width: 720px; margin: 0 auto; padding: 32px 16px 80px; }
-    .section { background: white; border-radius: 16px; padding: 28px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0.06); }
-    .section-title { font-size: 16px; font-weight: 700; color: #2E75B6; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #D6E4F0; display: flex; align-items: center; gap: 8px; }
-    .form-group { margin-bottom: 18px; }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px; }
-    label { display: block; font-size: 13px; font-weight: 600; color: #4a5568; margin-bottom: 6px; }
-    label .req { color: #e53e3e; margin-left: 2px; }
-    label .opt { color: #a0aec0; font-weight: 400; font-size: 12px; margin-left: 4px; }
-    input, select, textarea { width: 100%; padding: 10px 14px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 14px; color: #1a202c; background: #f7fafc; transition: border-color 0.2s, box-shadow 0.2s; outline: none; font-family: inherit; }
-    input:focus, select:focus, textarea:focus { border-color: #2E75B6; background: white; box-shadow: 0 0 0 3px rgba(46,117,182,0.12); }
-    textarea { resize: vertical; min-height: 90px; line-height: 1.6; }
-    input::placeholder, textarea::placeholder { color: #a0aec0; }
-    .activity-block { background: #f7fafc; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 16px; margin-bottom: 12px; }
-    .activity-block .activity-label { font-size: 12px; font-weight: 700; color: #2E75B6; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; }
-    .hint { font-size: 12px; color: #718096; margin-top: 4px; line-height: 1.5; }
-    .submit-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, #1F3864, #2E75B6); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; transition: opacity 0.2s, transform 0.1s; letter-spacing: 0.02em; }
-    .submit-btn:hover { opacity: 0.92; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+    .hero { position: relative; padding: 64px 24px 52px; text-align: center; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 0%, rgba(108,142,245,0.18) 0%, transparent 70%); pointer-events: none; }
+    .hero-badge { display: inline-block; padding: 4px 14px; border-radius: 99px; border: 1px solid rgba(108,142,245,0.4); background: rgba(108,142,245,0.08); font-size: 12px; color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 20px; }
+    .hero h1 { font-size: 32px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 12px; background: linear-gradient(135deg, #e2e8f0 30%, #6c8ef5 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero p { font-size: 15px; color: var(--muted); line-height: 1.7; }
+    .container { max-width: 680px; margin: 0 auto; padding: 8px 16px 100px; }
+    .progress-bar { height: 2px; background: var(--border); border-radius: 99px; margin-bottom: 32px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 99px; transition: width 0.4s ease; width: 0%; }
+    .section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; margin-bottom: 16px; transition: border-color 0.2s; }
+    .section:focus-within { border-color: rgba(108,142,245,0.4); }
+    .section-title { font-size: 13px; font-weight: 600; color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 22px; display: flex; align-items: center; gap: 8px; }
+    .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .form-group { margin-bottom: 16px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+    label { display: block; font-size: 12px; font-weight: 500; color: var(--muted); margin-bottom: 6px; }
+    label .req { color: var(--accent); margin-left: 2px; }
+    label .opt { color: #334155; font-size: 11px; margin-left: 4px; }
+    input, select, textarea { width: 100%; padding: 10px 14px; background: var(--input-bg); border: 1px solid var(--border); border-radius: 8px; font-size: 14px; color: var(--text); outline: none; font-family: inherit; transition: border-color 0.2s, box-shadow 0.2s; -webkit-appearance: none; }
+    input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(108,142,245,0.12); }
+    input::placeholder, textarea::placeholder { color: #334155; }
+    textarea { resize: vertical; min-height: 88px; line-height: 1.6; }
+    select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; cursor: pointer; }
+    select option { background: #1c2030; }
+    .activity-block { border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; margin-bottom: 10px; background: var(--input-bg); display: flex; align-items: center; gap: 12px; }
+    .activity-num { width: 24px; height: 24px; border-radius: 50%; background: rgba(108,142,245,0.12); border: 1px solid rgba(108,142,245,0.3); color: var(--accent); font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .activity-block input { background: transparent; border: none; padding: 0; font-size: 13px; }
+    .activity-block input:focus { box-shadow: none; border: none; }
+    .hint { font-size: 11px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+    .submit-btn { width: 100%; padding: 15px; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; letter-spacing: 0.02em; transition: opacity 0.2s, transform 0.1s; }
+    .submit-btn:hover { opacity: 0.9; }
     .submit-btn:active { transform: scale(0.99); }
-    .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .success-card { display: none; background: white; border-radius: 16px; padding: 48px 28px; text-align: center; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
-    .success-card .icon { font-size: 56px; margin-bottom: 16px; }
-    .success-card h2 { font-size: 22px; color: #1F3864; margin-bottom: 8px; }
-    .success-card p { color: #718096; font-size: 14px; line-height: 1.7; }
-    .error-msg { display: none; background: #fff5; border: 1.5px solid #fed7d7; border-radius: 8px; padding: 12px 16px; color: #c53030; font-size: 13px; margin-top: 12px; }
-    @media (max-width: 480px) { .form-row { grid-template-columns: 1fr; } .hero h1 { font-size: 22px; } .section { padding: 20px 16px; } }
+    .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .error-msg { display: none; margin-top: 12px; padding: 12px 16px; background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.2); border-radius: 8px; color: var(--error); font-size: 13px; }
+    .success-card { display: none; text-align: center; padding: 80px 28px; }
+    .success-icon { width: 64px; height: 64px; border-radius: 50%; background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.3); display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 24px; }
+    .success-card h2 { font-size: 24px; font-weight: 700; margin-bottom: 10px; }
+    .success-card p { color: var(--muted); font-size: 14px; line-height: 1.8; }
+    @media (max-width: 480px) { .form-row { grid-template-columns: 1fr; } .hero h1 { font-size: 24px; } .section { padding: 20px 16px; } }
   </style>
 </head>
 <body>
 <div class="hero">
-  <h1>🎓 美本申请信息收集表</h1>
+  <div class="hero-badge">🎓 College Application</div>
+  <h1>美本申请信息收集表</h1>
   <p>请如实填写，信息将由顾问保密处理<br/>用于制定你的个性化申请方案</p>
 </div>
 <div class="container">
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
   <form id="appForm">
     <div class="section">
-      <div class="section-title">👤 基本信息</div>
+      <div class="section-title">01 · 基本信息</div>
       <div class="form-row">
         <div class="form-group">
           <label>姓名 <span class="req">*</span></label>
@@ -78,7 +85,7 @@
             <option>10年级</option>
             <option>11年级</option>
             <option>12年级</option>
-            <option>已毕业/Gap Year</option>
+            <option>已毕业 / Gap Year</option>
           </select>
         </div>
         <div class="form-group">
@@ -94,7 +101,7 @@
       </div>
     </div>
     <div class="section">
-      <div class="section-title">📊 学术成绩</div>
+      <div class="section-title">02 · 学术成绩</div>
       <div class="form-row">
         <div class="form-group">
           <label>GPA <span class="req">*</span></label>
@@ -113,7 +120,7 @@
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label>SAT 总分 <span class="opt">（没考填 N/A）</span></label>
+          <label>SAT 总分 <span class="opt">没考填 N/A</span></label>
           <input type="text" name="sat" placeholder="例：1480" />
         </div>
         <div class="form-group">
@@ -123,23 +130,23 @@
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label>ACT Composite <span class="opt">（没考填 N/A）</span></label>
+          <label>ACT Composite <span class="opt">没考填 N/A</span></label>
           <input type="text" name="act" placeholder="例：34" />
         </div>
         <div class="form-group">
-          <label>托福总分 <span class="opt">（没考填 N/A）</span></label>
+          <label>托福总分 <span class="opt">没考填 N/A</span></label>
           <input type="text" name="toefl" placeholder="例：108" />
         </div>
       </div>
       <div class="form-group">
-        <label>AP / IB 课程及成绩 <span class="opt">（选填）</span></label>
+        <label>AP / IB 课程及成绩 <span class="opt">选填</span></label>
         <textarea name="ap" placeholder="例：AP Calculus BC: 5, AP Chemistry: 4, IB HL Math: 7"></textarea>
       </div>
     </div>
     <div class="section">
-      <div class="section-title">🎯 申请意向</div>
+      <div class="section-title">03 · 申请意向</div>
       <div class="form-group">
-        <label>意向专业 <span class="req">*</span><span class="opt">（最多填3个，用逗号隔开）</span></label>
+        <label>意向专业 <span class="req">*</span><span class="opt">最多3个，逗号隔开</span></label>
         <input type="text" name="major" placeholder="例：Computer Science, Applied Math" required />
       </div>
       <div class="form-group">
@@ -188,30 +195,30 @@
       </div>
     </div>
     <div class="section">
-      <div class="section-title">🏆 课外活动 & 荣誉</div>
-      <p class="hint" style="margin-bottom:16px;">填写你最重要的 3 个活动，格式：活动名称 + 一句话说明你做了什么 + 每周投入时长</p>
+      <div class="section-title">04 · 课外活动 & 荣誉</div>
+      <p class="hint" style="margin-bottom:14px;">填写最重要的 3 个活动：名称 + 一句话说明 + 每周时长</p>
       <div class="activity-block">
-        <div class="activity-label">活动 1（最重要）</div>
-        <input type="text" name="activity1" placeholder="例：Model UN 主席 | 组织了全校 200 人参与的年度会议 | 每周 8 小时" />
+        <div class="activity-num">1</div>
+        <input type="text" name="activity1" placeholder="例：Model UN 主席 | 组织200人年度会议 | 每周8小时" />
       </div>
       <div class="activity-block">
-        <div class="activity-label">活动 2</div>
-        <input type="text" name="activity2" placeholder="例：校管弦乐团首席小提琴 | 连续 4 年 | 每周 10 小时" />
+        <div class="activity-num">2</div>
+        <input type="text" name="activity2" placeholder="例：校管弦乐团首席 | 连续4年 | 每周10小时" />
       </div>
       <div class="activity-block">
-        <div class="activity-label">活动 3</div>
-        <input type="text" name="activity3" placeholder="例：自主研究项目 | 用 Python 分析本地空气质量数据 | 暑假全职" />
+        <div class="activity-num">3</div>
+        <input type="text" name="activity3" placeholder="例：自主研究 | Python分析空气质量数据 | 暑假全职" />
       </div>
-      <div class="form-group" style="margin-top:4px;">
-        <label>获得过的奖项 / 荣誉 <span class="opt">（选填）</span></label>
-        <textarea name="awards" placeholder="例：AMC 10 Top 5%，全国英语演讲比赛二等奖，校长奖学金获得者"></textarea>
+      <div class="form-group" style="margin-top:14px;">
+        <label>获得过的奖项 / 荣誉 <span class="opt">选填</span></label>
+        <textarea name="awards" placeholder="例：AMC 10 Top 5%，全国英语演讲比赛二等奖"></textarea>
       </div>
     </div>
     <div class="section">
-      <div class="section-title">✍️ 文书素材 <span style="font-weight:400;font-size:13px;color:#718096;">（选填，越真实越好）</span></div>
+      <div class="section-title">05 · 文书素材 <span style="font-weight:400;color:#334155;text-transform:none;letter-spacing:0;font-size:12px;">选填，越真实越好</span></div>
       <div class="form-group">
         <label>你最骄傲的一件事</label>
-        <textarea name="proudest" placeholder="可以是任何事，不必是'高大上'的。用自己的话说，像跟朋友聊天一样。"></textarea>
+        <textarea name="proudest" placeholder="可以是任何事，不必是「高大上」的。用自己的话说，像跟朋友聊天一样。"></textarea>
       </div>
       <div class="form-group">
         <label>为什么选择这个专业？</label>
@@ -226,12 +233,21 @@
     <div class="error-msg" id="errorMsg"></div>
   </form>
   <div class="success-card" id="successCard">
-    <div class="icon">🎉</div>
-    <h2>提交成功！</h2>
+    <div class="success-icon">✓</div>
+    <h2>提交成功</h2>
     <p>你的信息已经收到了。<br/>顾问会在 1-2 个工作日内联系你，<br/>开始制定你的个性化申请方案。</p>
   </div>
 </div>
 <script>
+  const inputs = document.querySelectorAll('input[required], select[required]');
+  const fill = document.getElementById('progressFill');
+  function updateProgress() {
+    let filled = 0;
+    inputs.forEach(i => { if (i.value.trim()) filled++; });
+    fill.style.width = Math.round((filled / inputs.length) * 100) + '%';
+  }
+  inputs.forEach(i => i.addEventListener('input', updateProgress));
+  inputs.forEach(i => i.addEventListener('change', updateProgress));
   document.getElementById('appForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     const btn = document.getElementById('submitBtn');
@@ -252,6 +268,7 @@
       if (result.success) {
         document.getElementById('appForm').style.display = 'none';
         document.getElementById('successCard').style.display = 'block';
+        fill.style.width = '100%';
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
         throw new Error(result.error || '提交失败');
