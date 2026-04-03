@@ -36,7 +36,6 @@ export default async function handler(req, res) {
   const sheets = google.sheets({ version: 'v4', auth });
   const spreadsheetId = process.env.SHEET_ID;
 
-  // GET — 读取某学生的选校列表
   if (req.method === 'GET') {
     try {
       const { email } = req.query;
@@ -50,17 +49,16 @@ export default async function handler(req, res) {
       const data = rows.slice(1)
         .map(row => {
           const obj = {};
-          headers.forEach((h, j) => obj[h] = row[j] || '');
+          headers.forEach((h, j) => obj[h] = (row[j] || '').trim());
           return obj;
         })
-        .filter(r => !email || r['学生邮箱'] === email);
+        .filter(r => !email || r['学生邮箱'] === email.trim());
       return res.json({ success: true, schools: data });
     } catch (err) {
       return res.status(500).json({ success: false, error: err.message });
     }
   }
 
-  // POST — 录入选校（先清空该学生旧记录，再写新记录）
   if (req.method === 'POST') {
     try {
       const { studentEmail, studentName, schools, operator } = req.body;
@@ -70,17 +68,16 @@ export default async function handler(req, res) {
 
       const sheetId = await getSheetId(sheets, spreadsheetId, 'schools');
 
-      // 读取现有数据，找出该学生所有行（倒序，从后往前删，避免行号偏移）
+      // 读取 A 列，找该学生所有行（倒序删，避免行号偏移）
       const existing = await sheets.spreadsheets.values.get({
         spreadsheetId,
         range: 'schools!A:A',
       });
       const existRows = existing.data.values || [];
-      // 收集需要删除的行索引（0-indexed），跳过表头(index 0)，倒序排列
       const toDelete = existRows
-        .map((r, i) => (i > 0 && r[0] === studentEmail) ? i : null)
+        .map((r, i) => (i > 0 && (r[0]||'').trim() === studentEmail.trim()) ? i : null)
         .filter(i => i !== null)
-        .sort((a, b) => b - a); // 倒序，从最后一行开始删
+        .sort((a, b) => b - a); // 倒序
 
       // 逐行删除（倒序保证行号不偏移）
       for (const rowIdx of toDelete) {
@@ -92,7 +89,7 @@ export default async function handler(req, res) {
                 range: {
                   sheetId,
                   dimension: 'ROWS',
-                  startIndex: rowIdx,
+                  startIndex: rowIdx,      // 0-indexed
                   endIndex: rowIdx + 1,
                 },
               },
@@ -104,7 +101,7 @@ export default async function handler(req, res) {
       // 写入新选校
       const ts = new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' });
       const rows = schools.map(s => [
-        studentEmail,
+        studentEmail.trim(),
         studentName || '',
         s.school || '',
         s.schoolCN || '',
@@ -121,12 +118,11 @@ export default async function handler(req, res) {
         requestBody: { values: rows },
       });
 
-      // 写日志
       await writeLog(sheets, spreadsheetId, {
         operator: operator || '顾问',
         operatorType: '顾问',
         studentEmail,
-        action: '录入选校',
+        action: '保存选校',
         detail: schools.map(s => `${s.schoolCN||s.school}(${s.category}/${s.appType})`).join('，'),
       });
 
