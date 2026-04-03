@@ -15,50 +15,41 @@
       --green: #059669; --green-light: #ecfdf5;
       --purple: #7c3aed; --purple-light: #f5f3ff;
     }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
-      background: var(--bg); color: var(--text); min-height: 100vh;
-    }
-    .topbar {
-      background: var(--blue-dark); padding: 0 40px;
-      display: flex; align-items: center; height: 56px;
-      position: sticky; top: 0; z-index: 30;
-      box-shadow: 0 2px 8px rgba(18,81,181,0.3);
-    }
+    body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+    .topbar { background: var(--blue-dark); padding: 0 40px; display: flex; align-items: center; height: 56px; position: sticky; top: 0; z-index: 30; box-shadow: 0 2px 8px rgba(18,81,181,0.3); }
     .topbar-logo { font-size: 18px; font-weight: 800; color: #fff; margin-right: 32px; display: flex; align-items: center; gap: 8px; }
     .topbar-logo span { color: rgba(255,255,255,0.6); font-weight: 400; font-size: 14px; }
     .topbar-nav { display: flex; height: 100%; }
-    .nav-item {
-      display: flex; align-items: center; padding: 0 18px;
-      font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.75);
-      border-bottom: 3px solid transparent; cursor: pointer; text-decoration: none; height: 100%;
-    }
+    .nav-item { display: flex; align-items: center; padding: 0 18px; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.75); border-bottom: 3px solid transparent; cursor: pointer; text-decoration: none; height: 100%; transition: all 0.15s; }
     .nav-item:hover { color: #fff; background: rgba(255,255,255,0.08); }
     .nav-item.active { color: #fff; border-bottom-color: #fff; }
     .topbar-right { margin-left: auto; display: flex; gap: 10px; align-items: center; }
     .topbar-tag { font-size: 11px; padding: 3px 10px; border-radius: 4px; background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.9); }
-    .subheader {
-      background: var(--white); border-bottom: 1px solid var(--border);
-      padding: 16px 40px; display: flex; align-items: center; justify-content: space-between;
-    }
+    .subheader { background: var(--white); border-bottom: 1px solid var(--border); padding: 16px 40px; display: flex; align-items: center; justify-content: space-between; }
     .subheader-left h1 { font-size: 18px; font-weight: 700; }
     .subheader-left p { font-size: 13px; color: var(--muted); margin-top: 2px; }
-    .subheader-right { display: flex; gap: 10px; }
+    .subheader-right { display: flex; gap: 10px; align-items: center; }
     .btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 16px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid transparent; text-decoration: none; }
     .btn-primary { background: var(--blue); color: #fff; }
     .btn-primary:hover { background: var(--blue-dark); }
     .btn-ghost { background: #fff; color: var(--label); border-color: var(--border2); }
     .btn-ghost:hover { background: var(--bg); }
+    .refresh-btn { font-size: 13px; color: var(--blue); background: none; border: none; cursor: pointer; padding: 4px 8px; border-radius: 4px; }
+    .refresh-btn:hover { background: var(--blue-light); }
     .page { max-width: 1200px; margin: 0 auto; padding: 28px 32px 60px; }
     .stats-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
     .stat-card { background: var(--white); border-radius: 8px; border: 1px solid var(--border); padding: 18px 20px; display: flex; align-items: center; gap: 14px; }
     .stat-icon { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
-    .stat-icon.blue { background: var(--blue-light); }
-    .stat-icon.green { background: var(--green-light); }
-    .stat-icon.amber { background: var(--amber-light); }
-    .stat-icon.teal { background: var(--teal-light); }
+    .stat-icon.blue { background: var(--blue-light); } .stat-icon.green { background: var(--green-light); }
+    .stat-icon.amber { background: var(--amber-light); } .stat-icon.teal { background: var(--teal-light); }
     .stat-num { font-size: 24px; font-weight: 800; line-height: 1; }
     .stat-label { font-size: 12px; color: var(--muted); margin-top: 3px; }
+    .state-box { text-align: center; padding: 60px 20px; color: var(--muted); }
+    .state-box .icon { font-size: 40px; margin-bottom: 12px; }
+    .state-box h3 { font-size: 16px; font-weight: 600; color: var(--label); margin-bottom: 6px; }
+    .state-box p { font-size: 13px; }
+    .spinner { display: inline-block; width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--blue); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 12px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
     .student-card { background: var(--white); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); transition: box-shadow 0.2s, border-color 0.2s; }
     .student-card:hover { box-shadow: 0 4px 16px rgba(26,111,232,0.1); border-color: #93b8f8; }
     .card-header { padding: 20px 24px; background: linear-gradient(135deg, #f0f6ff 0%, #fafcff 100%); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 18px; }
@@ -94,33 +85,43 @@
     .ap-grid { display: flex; flex-wrap: wrap; gap: 8px; }
     .ap-chip { display: flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 6px; background: #f8fafc; border: 1px solid var(--border); font-size: 12px; color: var(--label); }
     .ap-score { font-size: 12px; font-weight: 800; width: 20px; height: 20px; border-radius: 4px; display: flex; align-items: center; justify-content: center; }
-    .ap-5 { background: var(--green-light); color: var(--green); }
+    .ap-5{background:var(--green-light);color:var(--green)} .ap-4{background:var(--blue-light);color:var(--blue)} .ap-3{background:var(--amber-light);color:var(--amber)}
     .act-row { display: flex; align-items: flex-start; gap: 12px; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border); margin-bottom: 8px; background: #fafbfc; }
-    .act-icon { width: 32px; height: 32px; border-radius: 6px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 14px; background: var(--blue-light); }
+    .act-row:last-child { margin-bottom: 0; }
+    .act-num { width: 24px; height: 24px; border-radius: 50%; background: var(--blue-light); color: var(--blue); font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+    .act-body { flex: 1; }
     .act-role { font-size: 10px; font-weight: 600; color: var(--blue); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 2px; }
     .act-title { font-size: 13px; font-weight: 600; }
     .act-desc { font-size: 11px; color: var(--muted); margin-top: 2px; line-height: 1.5; }
+    .act-meta { display: flex; gap: 8px; margin-top: 4px; }
+    .act-tag { font-size: 10px; padding: 2px 8px; border-radius: 3px; background: var(--bg); color: var(--muted); border: 1px solid var(--border); }
+    .honors-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .honor-chip { display: flex; align-items: center; gap: 8px; padding: 7px 14px; border-radius: 6px; background: var(--amber-light); border: 1px solid #fcd34d; }
+    .honor-name { font-size: 12px; font-weight: 600; color: var(--text); }
+    .honor-level { font-size: 10px; color: var(--amber); }
     .intent-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .intent-box { background: #fafbfc; border-radius: 8px; padding: 12px 14px; border: 1px solid var(--border); }
     .intent-box-lbl { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
     .intent-tags { display: flex; flex-wrap: wrap; gap: 5px; }
     .intent-tag { font-size: 12px; padding: 3px 10px; border-radius: 4px; background: var(--blue-light); color: var(--blue); border: 1px solid #bdd5fb; }
-    .intent-tag.teal { background: var(--teal-light); color: var(--teal); border-color: #a7d8de; }
-    .intent-tag.amber { background: var(--amber-light); color: var(--amber); border-color: #fcd34d; }
-    .intent-tag.gray { background: var(--bg); color: var(--muted); border-color: var(--border); }
+    .intent-tag.teal{background:var(--teal-light);color:var(--teal);border-color:#a7d8de}
+    .intent-tag.amber{background:var(--amber-light);color:var(--amber);border-color:#fcd34d}
+    .intent-tag.gray{background:var(--bg);color:var(--muted);border-color:var(--border)}
     .essay-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .essay-card { background: #fafbfc; border-radius: 8px; padding: 12px 14px; border: 1px solid var(--border); }
     .essay-q { font-size: 11px; font-weight: 600; color: var(--label); margin-bottom: 5px; }
-    .essay-a { font-size: 12px; color: var(--muted); font-style: italic; line-height: 1.5; }
+    .essay-a { font-size: 12px; color: var(--text); line-height: 1.6; }
+    .essay-a.empty { color: var(--muted); font-style: italic; }
     .info-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
     .info-key { font-size: 10px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
     .info-val { font-size: 13px; }
-    .warn-banner { font-size: 11px; color: #92400e; margin-top: 10px; padding: 8px 12px; border-radius: 6px; background: #fffbeb; border: 1px solid #fcd34d; }
+    .warn-banner { font-size: 11px; color: #92400e; padding: 8px 12px; border-radius: 6px; background: #fffbeb; border: 1px solid #fcd34d; }
+    .note-box { margin-top:12px; padding:10px 14px; border-radius:6px; background:#f0f6ff; border:1px solid #bdd5fb; font-size:12px; color:var(--label); }
     @media (max-width: 900px) {
-      .topbar { padding: 0 16px; } .subheader { padding: 14px 16px; flex-direction: column; gap: 10px; align-items: flex-start; }
-      .page { padding: 16px 16px 40px; } .stats-bar { grid-template-columns: repeat(2,1fr); }
-      .scores-row { grid-template-columns: repeat(3,1fr); } .intent-grid,.essay-grid { grid-template-columns: 1fr; }
-      .info-grid { grid-template-columns: repeat(2,1fr); }
+      .topbar{padding:0 16px} .subheader{padding:14px 16px;flex-direction:column;gap:10px;align-items:flex-start}
+      .page{padding:16px 16px 40px} .stats-bar{grid-template-columns:repeat(2,1fr)}
+      .scores-row{grid-template-columns:repeat(3,1fr)} .intent-grid,.essay-grid{grid-template-columns:1fr}
+      .info-grid{grid-template-columns:repeat(2,1fr)} .card-header{flex-wrap:wrap}
     }
   </style>
 </head>
@@ -135,7 +136,7 @@
     <a class="nav-item" href="#">数据统计</a>
   </nav>
   <div class="topbar-right">
-    <span class="topbar-tag">2027 届</span>
+    <span class="topbar-tag" id="year-tag">加载中...</span>
     <span class="topbar-tag">内部系统</span>
   </div>
 </div>
@@ -143,113 +144,246 @@
 <div class="subheader">
   <div class="subheader-left">
     <h1>学生档案 · M2 Profile</h1>
-    <p>共 1 名学生 · 数据来源：admithere.com · 最后更新 2026-04-02</p>
+    <p id="sub-desc">正在从 Google Sheet 加载数据...</p>
   </div>
   <div class="subheader-right">
+    <button class="refresh-btn" onclick="loadStudents()">↻ 刷新</button>
     <a class="btn btn-ghost" href="/">← 返回表单</a>
-    <a class="btn btn-primary" href="#">+ 新增学生</a>
+    <a class="btn btn-primary" href="/">+ 新增学生</a>
   </div>
 </div>
 
 <div class="page">
-
   <div class="stats-bar">
-    <div class="stat-card"><div class="stat-icon blue">👥</div><div><div class="stat-num">1</div><div class="stat-label">在库学生</div></div></div>
-    <div class="stat-card"><div class="stat-icon green">✅</div><div><div class="stat-num">0</div><div class="stat-label">定校完成</div></div></div>
-    <div class="stat-card"><div class="stat-icon amber">📝</div><div><div class="stat-num">0</div><div class="stat-label">文书进行中</div></div></div>
-    <div class="stat-card"><div class="stat-icon teal">🎯</div><div><div class="stat-num">2027</div><div class="stat-label">申请届次</div></div></div>
+    <div class="stat-card"><div class="stat-icon blue">👥</div><div><div class="stat-num" id="stat-total">-</div><div class="stat-label">在库学生</div></div></div>
+    <div class="stat-card"><div class="stat-icon green">✅</div><div><div class="stat-num" id="stat-complete">-</div><div class="stat-label">资料完整</div></div></div>
+    <div class="stat-card"><div class="stat-icon amber">📝</div><div><div class="stat-num" id="stat-pending">-</div><div class="stat-label">待补充活动</div></div></div>
+    <div class="stat-card"><div class="stat-icon teal">🎯</div><div><div class="stat-num" id="stat-year">-</div><div class="stat-label">最近届次</div></div></div>
   </div>
-
-  <div class="student-card">
-    <div class="card-header">
-      <div class="avatar">史</div>
-      <div class="header-info">
-        <div class="student-name">史皓源 <span class="student-name-en">Shi Haoyuan</span></div>
-        <div class="student-meta">
-          <span class="meta-chip blue">Grade 11 · 2027届</span>
-          <span class="meta-chip teal">金陵中学河西分校</span>
-          <span class="meta-chip">国际学校 · 南京</span>
-          <span class="meta-chip purple">CS 志向</span>
-          <span class="meta-chip">男 · 2009.06.05</span>
-        </div>
-      </div>
-      <div class="header-badges">
-        <span class="strategy-tag tag-ed">ED 为主</span>
-        <span class="strategy-tag tag-safe">稳妥优先</span>
-        <div class="tag-enroll">📅 2028 Fall 入学</div>
-      </div>
-    </div>
-
-    <div>
-      <div class="card-section">
-        <div class="section-label">成绩概览</div>
-        <div class="scores-row">
-          <div class="score-box"><div class="score-lbl">GPA</div><div class="score-val c-blue">3.6</div><div class="score-sub">/ 4.0 未加权</div><div class="score-bar"><div class="score-bar-fill bg-blue" style="width:90%"></div></div></div>
-          <div class="score-box"><div class="score-lbl">SAT 总分</div><div class="score-val c-teal">1380</div><div class="score-sub">数学 800 · EBRW 580</div><div class="score-bar"><div class="score-bar-fill bg-teal" style="width:86%"></div></div></div>
-          <div class="score-box"><div class="score-lbl">托福</div><div class="score-val c-amber">93</div><div class="score-sub">/ 120</div><div class="score-bar"><div class="score-bar-fill bg-amber" style="width:77%"></div></div></div>
-          <div class="score-box"><div class="score-lbl">AP 课程</div><div class="score-val c-green">4 门</div><div class="score-sub">均分 5.0 ★</div><div class="score-bar"><div class="score-bar-fill bg-green" style="width:100%"></div></div></div>
-          <div class="score-box"><div class="score-lbl">SAT 再考</div><div class="score-val c-amber" style="font-size:16px;padding-top:4px">待定</div><div class="score-sub">3月考次</div><div class="score-bar"><div class="score-bar-fill bg-amber" style="width:20%"></div></div></div>
-        </div>
-      </div>
-
-      <div class="card-section">
-        <div class="section-label">AP 成绩</div>
-        <div class="ap-grid">
-          <div class="ap-chip">AP Calculus BC <span class="ap-score ap-5">5</span></div>
-          <div class="ap-chip">AP Physics C: Mechanics <span class="ap-score ap-5">5</span></div>
-          <div class="ap-chip">AP Economics: Macro <span class="ap-score ap-5">5</span></div>
-          <div class="ap-chip">AP Economics: Micro <span class="ap-score ap-5">5</span></div>
-        </div>
-      </div>
-
-      <div class="card-section">
-        <div class="section-label">课外活动</div>
-        <div class="act-row">
-          <div class="act-icon">💻</div>
-          <div>
-            <div class="act-role">其他</div>
-            <div class="act-title">Computer Science 相关活动</div>
-            <div class="act-desc">待补充详细描述</div>
-          </div>
-        </div>
-        <div class="warn-banner">⚠️ 活动信息待补充 — 请在信息收集表中完善活动 1–10 的详细内容</div>
-      </div>
-
-      <div class="card-section">
-        <div class="section-label">申请意向 & 偏好</div>
-        <div class="intent-grid">
-          <div class="intent-box"><div class="intent-box-lbl">意向专业</div><div class="intent-tags"><span class="intent-tag">Computer Science</span><span class="intent-tag gray">意向2 待填</span></div></div>
-          <div class="intent-box"><div class="intent-box-lbl">申请策略</div><div class="intent-tags"><span class="intent-tag amber">ED 为主</span><span class="intent-tag teal">稳妥优先</span><span class="intent-tag">2028 Fall</span></div></div>
-          <div class="intent-box"><div class="intent-box-lbl">地区 & 规模</div><div class="intent-tags"><span class="intent-tag gray">地区不限</span><span class="intent-tag gray">规模不限</span></div></div>
-          <div class="intent-box"><div class="intent-box-lbl">经济 & 财援</div><div class="intent-tags"><span class="intent-tag gray">年费预算待定</span><span class="intent-tag gray">财援待定</span></div></div>
-        </div>
-      </div>
-
-      <div class="card-section">
-        <div class="section-label">文书素材（自述）</div>
-        <div class="essay-grid">
-          <div class="essay-card"><div class="essay-q">❓ 最骄傲的事</div><div class="essay-a">待填写</div></div>
-          <div class="essay-card"><div class="essay-q">🔄 改变你的经历</div><div class="essay-a">待填写</div></div>
-          <div class="essay-card"><div class="essay-q">🎯 为什么选这个专业</div><div class="essay-a">待填写</div></div>
-          <div class="essay-card"><div class="essay-q">✨ 与众不同之处</div><div class="essay-a">待填写</div></div>
-        </div>
-      </div>
-
-      <div class="card-section">
-        <div class="section-label">联系信息</div>
-        <div class="info-grid">
-          <div><div class="info-key">微信</div><div class="info-val">Shhyyy0605</div></div>
-          <div><div class="info-key">手机</div><div class="info-val">153 1208 8188</div></div>
-          <div><div class="info-key">邮箱</div><div class="info-val">15312088188@163.com</div></div>
-          <div><div class="info-key">国籍 / 身份</div><div class="info-val">中国大陆 · 国际学生</div></div>
-        </div>
-        <div style="margin-top:12px;padding:10px 14px;border-radius:6px;background:#f0f6ff;border:1px solid #bdd5fb;font-size:12px;color:var(--label)">
-          📝 申请备注：稳妥为主（保底优先）
-        </div>
-      </div>
+  <div id="students-container">
+    <div class="state-box">
+      <div class="spinner"></div>
+      <h3>正在加载学生数据...</h3>
+      <p>从 Google Sheet 获取最新信息</p>
     </div>
   </div>
-
 </div>
+
+<script>
+const v = (s) => (s || '').trim();
+
+function scoreBar(val, max, cls) {
+  const pct = max > 0 ? Math.round((val / max) * 100) : 0;
+  return `<div class="score-bar"><div class="score-bar-fill ${cls}" style="width:${Math.min(pct,100)}%"></div></div>`;
+}
+
+function apCls(score) {
+  const n = parseInt(score);
+  return n >= 5 ? 'ap-5' : n >= 4 ? 'ap-4' : 'ap-3';
+}
+
+function renderStudent(s) {
+  const nameCN = v(s['中文姓名']) || '未填写';
+  const nameEN = v(s['英文姓名']);
+  const grade = v(s['年级']);
+  const gradYear = v(s['毕业年份']);
+  const school = v(s['高中名称']);
+  const schoolType = v(s['高中类型']);
+  const city = v(s['高中城市']);
+  const major1 = v(s['意向专业1']);
+  const major2 = v(s['意向专业2']);
+  const major3 = v(s['意向专业3']);
+  const gender = v(s['性别']);
+  const dob = v(s['出生日期']);
+  const gpa = v(s['GPA']);
+  const gpaScale = v(s['GPA满分制']) || '4.0';
+  const sat = v(s['SAT总分']);
+  const satMath = v(s['SAT数学']);
+  const satEbrw = v(s['SAT EBRW']);
+  const satRetake = v(s['是否再考SAT']);
+  const act = v(s['ACT总分']);
+  const toefl = v(s['托福总分']);
+  const ielts = v(s['雅思']);
+  const enrollTerm = v(s['入学学期']);
+  const appRound = v(s['申请轮次']);
+  const region = v(s['地区偏好']);
+  const schoolSize = v(s['学校规模']);
+  const budget = v(s['年费预算']);
+  const aidNeeded = v(s['财援需求']);
+  const tendency = v(s['录取倾向']);
+  const targetSchools = v(s['意向学校']);
+  const appNotes = v(s['申请备注']);
+  const wechat = v(s['微信号']);
+  const phone = v(s['手机号']);
+  const email = v(s['邮箱']);
+  const nationality = v(s['国籍']);
+  const timestamp = v(s['时间戳']);
+  const proudest = v(s['最骄傲的事']);
+  const lifeEvent = v(s['改变你的经历']);
+  const whyMajor = v(s['为什么选这个专业']);
+  const unique = v(s['与众不同之处']);
+
+  const aps = [];
+  for (let i = 1; i <= 8; i++) {
+    const n = v(s[`AP${i}课程`]), sc = v(s[`AP${i}分数`]);
+    if (n) aps.push({n, sc});
+  }
+  const acts = [];
+  for (let i = 1; i <= 10; i++) {
+    const type = v(s[`活动${i}类别`]), role = v(s[`活动${i}职位`]);
+    const name = v(s[`活动${i}名称`]), desc = v(s[`活动${i}描述`]);
+    const hrs = v(s[`活动${i}每周时长`]), period = v(s[`活动${i}时间段`]);
+    if (name || type) acts.push({type, role, name, desc, hrs, period});
+  }
+  const honors = [];
+  for (let i = 1; i <= 5; i++) {
+    const name = v(s[`奖项${i}名称`]), level = v(s[`奖项${i}级别`]), gr = v(s[`奖项${i}年级`]);
+    if (name) honors.push({name, level, gr});
+  }
+
+  let html = `<div class="student-card">
+  <div class="card-header">
+    <div class="avatar">${nameCN.charAt(0)}</div>
+    <div class="header-info">
+      <div class="student-name">${nameCN}${nameEN ? ` <span class="student-name-en">${nameEN}</span>` : ''}</div>
+      <div class="student-meta">
+        ${grade ? `<span class="meta-chip blue">${grade}${gradYear ? ' · ' + gradYear + '届' : ''}</span>` : ''}
+        ${school ? `<span class="meta-chip teal">${school}</span>` : ''}
+        ${schoolType||city ? `<span class="meta-chip">${[schoolType,city].filter(Boolean).join(' · ')}</span>` : ''}
+        ${major1 ? `<span class="meta-chip purple">${major1} 志向</span>` : ''}
+        ${gender||dob ? `<span class="meta-chip">${[gender,dob].filter(Boolean).join(' · ')}</span>` : ''}
+      </div>
+    </div>
+    <div class="header-badges">
+      ${appRound ? `<span class="strategy-tag tag-ed">${appRound}</span>` : ''}
+      ${tendency ? `<span class="strategy-tag tag-safe">${tendency}</span>` : ''}
+      ${enrollTerm ? `<div class="tag-enroll">📅 ${enrollTerm} 入学</div>` : ''}
+    </div>
+  </div>
+  <div>`;
+
+  // 成绩
+  let scoreBoxes = '';
+  if (gpa) scoreBoxes += `<div class="score-box"><div class="score-lbl">GPA</div><div class="score-val c-blue">${gpa}</div><div class="score-sub">/ ${gpaScale}</div>${scoreBar(parseFloat(gpa),parseFloat(gpaScale)||4,'bg-blue')}</div>`;
+  if (sat) scoreBoxes += `<div class="score-box"><div class="score-lbl">SAT</div><div class="score-val c-teal">${sat}</div><div class="score-sub">${satMath?'数'+satMath:''} ${satEbrw?'文'+satEbrw:''}</div>${scoreBar(parseInt(sat),1600,'bg-teal')}</div>`;
+  if (act) scoreBoxes += `<div class="score-box"><div class="score-lbl">ACT</div><div class="score-val c-teal">${act}</div><div class="score-sub">/ 36</div>${scoreBar(parseInt(act),36,'bg-teal')}</div>`;
+  if (toefl) scoreBoxes += `<div class="score-box"><div class="score-lbl">托福</div><div class="score-val c-amber">${toefl}</div><div class="score-sub">/ 120</div>${scoreBar(parseInt(toefl),120,'bg-amber')}</div>`;
+  if (ielts) scoreBoxes += `<div class="score-box"><div class="score-lbl">雅思</div><div class="score-val c-amber">${ielts}</div><div class="score-sub">/ 9.0</div>${scoreBar(parseFloat(ielts),9,'bg-amber')}</div>`;
+  if (aps.length) {
+    const avg = aps.filter(a=>a.sc).length ? (aps.reduce((s,a)=>s+parseInt(a.sc||0),0)/aps.filter(a=>a.sc).length).toFixed(1) : '-';
+    scoreBoxes += `<div class="score-box"><div class="score-lbl">AP 课程</div><div class="score-val c-green">${aps.length} 门</div><div class="score-sub">均分 ${avg}</div>${scoreBar(aps.length,8,'bg-green')}</div>`;
+  }
+  if (satRetake) scoreBoxes += `<div class="score-box"><div class="score-lbl">SAT 再考</div><div class="score-val c-amber" style="font-size:14px;padding-top:6px">${satRetake}</div><div class="score-sub">计划</div></div>`;
+  if (scoreBoxes) html += `<div class="card-section"><div class="section-label">成绩概览</div><div class="scores-row">${scoreBoxes}</div></div>`;
+
+  // AP
+  if (aps.length) {
+    html += `<div class="card-section"><div class="section-label">AP 成绩</div><div class="ap-grid">`;
+    aps.forEach(a => { html += `<div class="ap-chip">${a.n}${a.sc ? ` <span class="ap-score ${apCls(a.sc)}">${a.sc}</span>` : ''}</div>`; });
+    html += `</div></div>`;
+  }
+
+  // 活动
+  html += `<div class="card-section"><div class="section-label">课外活动</div>`;
+  if (acts.length) {
+    acts.forEach((a, i) => {
+      html += `<div class="act-row"><div class="act-num">${i+1}</div><div class="act-body">
+        ${a.type||a.role ? `<div class="act-role">${[a.type,a.role].filter(Boolean).join(' · ')}</div>` : ''}
+        <div class="act-title">${a.name||'未填写名称'}</div>
+        ${a.desc ? `<div class="act-desc">${a.desc}</div>` : ''}
+        ${a.hrs||a.period ? `<div class="act-meta">${a.hrs?`<span class="act-tag">⏱ ${a.hrs}h/周</span>`:''}${a.period?`<span class="act-tag">📅 ${a.period}</span>`:''}</div>` : ''}
+      </div></div>`;
+    });
+  } else {
+    html += `<div class="warn-banner">⚠️ 活动信息待补充 — 请在信息收集表中完善活动 1–10 的详细内容</div>`;
+  }
+  html += `</div>`;
+
+  // 奖项
+  if (honors.length) {
+    html += `<div class="card-section"><div class="section-label">荣誉奖项</div><div class="honors-grid">`;
+    honors.forEach(h => { html += `<div class="honor-chip"><span>🏆</span><div><div class="honor-name">${h.name}</div>${h.level||h.gr?`<div class="honor-level">${[h.level,h.gr].filter(Boolean).join(' · ')}</div>`:''}</div></div>`; });
+    html += `</div></div>`;
+  }
+
+  // 申请意向
+  html += `<div class="card-section"><div class="section-label">申请意向 & 偏好</div><div class="intent-grid">
+    <div class="intent-box"><div class="intent-box-lbl">意向专业</div><div class="intent-tags">
+      ${major1?`<span class="intent-tag">${major1}</span>`:''}
+      ${major2?`<span class="intent-tag">${major2}</span>`:''}
+      ${major3?`<span class="intent-tag">${major3}</span>`:''}
+      ${!major1&&!major2&&!major3?'<span class="intent-tag gray">待填写</span>':''}
+    </div></div>
+    <div class="intent-box"><div class="intent-box-lbl">申请策略</div><div class="intent-tags">
+      ${appRound?`<span class="intent-tag amber">${appRound}</span>`:''}
+      ${tendency?`<span class="intent-tag teal">${tendency}</span>`:''}
+      ${enrollTerm?`<span class="intent-tag">${enrollTerm}</span>`:''}
+    </div></div>
+    <div class="intent-box"><div class="intent-box-lbl">地区 & 规模</div><div class="intent-tags">
+      <span class="intent-tag gray">${region||'地区不限'}</span>
+      <span class="intent-tag gray">${schoolSize||'规模不限'}</span>
+    </div></div>
+    <div class="intent-box"><div class="intent-box-lbl">经济 & 财援</div><div class="intent-tags">
+      <span class="intent-tag gray">${budget||'预算待定'}</span>
+      <span class="intent-tag gray">${aidNeeded||'财援待定'}</span>
+    </div></div>
+  </div>
+  ${targetSchools?`<div style="margin-top:10px;padding:10px 14px;border-radius:6px;background:var(--blue-light);border:1px solid #bdd5fb;font-size:12px;color:var(--label)">🎯 意向学校：${targetSchools}</div>`:''}
+  </div>`;
+
+  // 文书
+  html += `<div class="card-section"><div class="section-label">文书素材（自述）</div><div class="essay-grid">
+    <div class="essay-card"><div class="essay-q">❓ 最骄傲的事</div><div class="essay-a${proudest?'':' empty'}">${proudest||'待填写'}</div></div>
+    <div class="essay-card"><div class="essay-q">🔄 改变你的经历</div><div class="essay-a${lifeEvent?'':' empty'}">${lifeEvent||'待填写'}</div></div>
+    <div class="essay-card"><div class="essay-q">🎯 为什么选这个专业</div><div class="essay-a${whyMajor?'':' empty'}">${whyMajor||'待填写'}</div></div>
+    <div class="essay-card"><div class="essay-q">✨ 与众不同之处</div><div class="essay-a${unique?'':' empty'}">${unique||'待填写'}</div></div>
+  </div></div>`;
+
+  // 联系
+  html += `<div class="card-section"><div class="section-label">联系信息</div>
+  <div class="info-grid">
+    ${wechat?`<div><div class="info-key">微信</div><div class="info-val">${wechat}</div></div>`:''}
+    ${phone?`<div><div class="info-key">手机</div><div class="info-val">${phone}</div></div>`:''}
+    ${email?`<div><div class="info-key">邮箱</div><div class="info-val">${email}</div></div>`:''}
+    ${nationality?`<div><div class="info-key">国籍</div><div class="info-val">${nationality}</div></div>`:''}
+  </div>
+  ${appNotes?`<div class="note-box">📝 申请备注：${appNotes}</div>`:''}
+  <div style="margin-top:8px;font-size:11px;color:var(--muted)">填表时间：${timestamp}</div>
+  </div>`;
+
+  html += `</div></div>`;
+  return html;
+}
+
+async function loadStudents() {
+  const container = document.getElementById('students-container');
+  container.innerHTML = `<div class="state-box"><div class="spinner"></div><h3>正在加载...</h3><p>从 Google Sheet 获取最新数据</p></div>`;
+  try {
+    const res = await fetch('/api/students');
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error || '加载失败');
+    const students = data.students;
+    document.getElementById('stat-total').textContent = students.length;
+    const hasActs = students.filter(s => v(s['活动1名称'])).length;
+    document.getElementById('stat-complete').textContent = hasActs;
+    document.getElementById('stat-pending').textContent = students.length - hasActs;
+    const years = students.map(s => v(s['毕业年份'])).filter(Boolean).map(Number);
+    const maxYear = years.length ? Math.max(...years) : null;
+    document.getElementById('stat-year').textContent = maxYear || '-';
+    document.getElementById('year-tag').textContent = maxYear ? maxYear + ' 届' : '未知届';
+    const now = new Date().toLocaleString('zh-CN', {timeZone:'Asia/Shanghai'});
+    document.getElementById('sub-desc').textContent = `共 ${students.length} 名学生 · 数据来源：admithere.com · 刷新于 ${now}`;
+    if (!students.length) {
+      container.innerHTML = `<div class="state-box"><div class="icon">📭</div><h3>暂无学生数据</h3><p>请先通过信息收集表添加学生</p></div>`;
+      return;
+    }
+    container.innerHTML = students.map(renderStudent).join('');
+  } catch(err) {
+    container.innerHTML = `<div class="state-box"><div class="icon">⚠️</div><h3>加载失败</h3><p>${err.message}</p><button class="btn btn-primary" style="margin-top:16px" onclick="loadStudents()">重试</button></div>`;
+  }
+}
+
+loadStudents();
+</script>
 </body>
 </html>
