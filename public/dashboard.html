@@ -134,45 +134,38 @@
     .btn-cancel:hover { background: var(--bg); }
     .btn-del-confirm { padding: 7px 16px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; background: #dc2626; color: #fff; }
     .btn-del-confirm:hover { background: #b91c1c; }
-    /* 选校管理 */
-    .school-input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
-    .school-input-row { display: flex; gap: 6px; align-items: center; padding: 8px 10px; background: #fafbfc; border: 1px solid var(--border); border-radius: 7px; }
+    .school-input-row { display: flex; gap: 6px; align-items: center; padding: 8px 10px; background: #fafbfc; border: 1px solid var(--border); border-radius: 7px; margin-bottom: 6px; }
     .school-input-row input, .school-input-row select { border: 1px solid var(--border); border-radius: 4px; padding: 4px 8px; font-size: 12px; background: #fff; outline: none; }
-    .school-input-row input { flex: 1; }
     .school-input-row input:focus, .school-input-row select:focus { border-color: var(--blue); }
-    .school-tag { font-size: 10px; padding: 2px 8px; border-radius: 3px; font-weight: 600; }
-    .school-tag.reach { background: #fef2f2; color: #dc2626; border: 1px solid #fca5a5; }
-    .school-tag.match { background: var(--blue-light); color: var(--blue); border: 1px solid #bdd5fb; }
-    .school-tag.safety { background: var(--green-light); color: var(--green); border: 1px solid #6ee7b7; }
     .add-school-btn { font-size: 12px; padding: 5px 12px; border-radius: 5px; border: 1px dashed var(--border2); background: #fff; color: var(--muted); cursor: pointer; }
     .add-school-btn:hover { border-color: var(--blue); color: var(--blue); }
     .remove-school-btn { font-size: 11px; padding: 2px 6px; border-radius: 4px; border: none; background: #fee2e2; color: #dc2626; cursor: pointer; flex-shrink: 0; }
     .save-schools-btn { font-size: 12px; font-weight: 600; padding: 7px 16px; border-radius: 6px; border: none; background: var(--green); color: #fff; cursor: pointer; }
     .save-schools-btn:hover { background: #047857; }
     .save-schools-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-    /* DDL 时间线 */
-    .ddl-school-block { margin-bottom: 18px; }
+    .ddl-school-block { margin-bottom: 20px; }
     .ddl-school-name { font-size: 13px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
     .ddl-app-type { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 3px; }
     .ddl-app-ed { background: #fef3c7; color: #92400e; }
     .ddl-app-ea { background: var(--purple-light); color: var(--purple); }
     .ddl-app-rd { background: var(--blue-light); color: var(--blue); }
     .ddl-list { display: flex; flex-direction: column; gap: 5px; }
-    .ddl-item { display: flex; align-items: center; gap: 10px; padding: 6px 10px; border-radius: 6px; background: #fafbfc; border: 1px solid var(--border); font-size: 12px; }
+    .ddl-item { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 6px; background: #fafbfc; border: 1px solid var(--border); font-size: 12px; transition: background 0.15s; }
+    .ddl-item.done { background: var(--green-light); border-color: #6ee7b7; }
+    .ddl-item.done .ddl-type { text-decoration: line-through; color: var(--muted); }
+    .ddl-item.done .ddl-date { color: var(--green) !important; }
+    .ddl-check { width: 16px; height: 16px; border-radius: 4px; cursor: pointer; accent-color: var(--green); flex-shrink: 0; }
     .ddl-date { font-weight: 700; color: var(--blue); min-width: 90px; flex-shrink: 0; }
     .ddl-date.urgent { color: #dc2626; }
     .ddl-date.soon { color: var(--amber); }
     .ddl-type { color: var(--label); flex: 1; }
     .ddl-note { font-size: 11px; color: var(--muted); }
+    .ddl-who { font-size: 10px; color: var(--muted); white-space: nowrap; }
     .ddl-summary { background: var(--blue-light); border: 1px solid #bdd5fb; border-radius: 7px; padding: 10px 14px; font-size: 12px; color: var(--label); margin-bottom: 14px; }
     .gen-ddl-btn { font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 6px; border: 1px solid var(--teal); background: var(--teal-light); color: var(--teal); cursor: pointer; }
     .gen-ddl-btn:hover { background: var(--teal); color: #fff; }
     .gen-ddl-btn:disabled { opacity: 0.6; cursor: not-allowed; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    @media (max-width: 700px) {
-      .sidebar{width:200px} .scores-grid{grid-template-columns:repeat(3,1fr)}
-      .intent-grid,.essay-grid,.school-input-grid{grid-template-columns:1fr} .info-grid{grid-template-columns:repeat(2,1fr)}
-    }
   </style>
 </head>
 <body>
@@ -205,13 +198,17 @@
     </div>
   </div>
 </div>
-
 <script>
 let allStudents = [];
 let currentIdx = null;
-let currentSchools = []; // 当前学生的选校列表
-let currentDDL = null;   // 当前学生的 DDL 数据
+let currentSchools = [];
+let currentDDL = null;
+let currentCheckins = {};
+let currentEmail = '';
+let schoolRows = [];
 const v = s => (s || '').trim();
+// 生成安全的 DOM id（只保留字母数字下划线）
+const safeId = s => s.replace(/[^a-zA-Z0-9]/g, '_');
 
 async function loadStudents() {
   document.getElementById('student-list').innerHTML = '<div class="sidebar-loading"><span class="mini-spinner"></span>加载中...</div>';
@@ -262,16 +259,25 @@ async function selectStudent(idx) {
   currentIdx = idx;
   currentSchools = [];
   currentDDL = null;
+  currentCheckins = {};
+  schoolRows = [];
+  currentEmail = v(allStudents[idx]['邮箱']);
   document.querySelectorAll('.student-list-item').forEach(el => el.classList.remove('active'));
   const el = document.getElementById('sli-'+idx);
   if (el) el.classList.add('active');
-  // 加载已保存选校
-  const email = v(allStudents[idx]['邮箱']);
-  if (email) {
+  if (currentEmail) {
     try {
-      const res = await fetch('/api/schools?email=' + encodeURIComponent(email));
-      const data = await res.json();
-      if (data.success) currentSchools = data.schools;
+      const [sr, cr] = await Promise.all([
+        fetch('/api/schools?email=' + encodeURIComponent(currentEmail)).then(r=>r.json()),
+        fetch('/api/checkin?email=' + encodeURIComponent(currentEmail)).then(r=>r.json()),
+      ]);
+      if (sr.success) currentSchools = sr.schools;
+      if (cr.success) {
+        cr.checkins.forEach(c => {
+          const key = safeId(c['学校英文名'] + '_' + c['DDL类型'] + '_' + c['DDL日期']);
+          currentCheckins[key] = { status: c['状态'], operator: c['操作人'], time: c['操作时间'] };
+        });
+      }
     } catch(e) {}
   }
   renderDetail(allStudents[idx], idx);
@@ -305,7 +311,6 @@ function renderDetail(s, idx) {
 
   let h='<div class="detail-inner">';
 
-  // Profile header
   h+='<div class="profile-header"><div class="profile-avatar">'+nameCN.charAt(0)+'</div><div class="profile-info"><div class="profile-name">'+nameCN+(nameEN?' <span class="profile-name-en">'+nameEN+'</span>':'')+'</div><div class="profile-chips">';
   if(grade||gradYear)h+='<span class="chip blue">'+(grade||'')+(gradYear?' · '+gradYear+'届':'')+'</span>';
   if(school)h+='<span class="chip teal">'+school+'</span>';
@@ -319,7 +324,6 @@ function renderDetail(s, idx) {
   if(enrollTerm)h+='<div class="badge-enroll">📅 '+enrollTerm+'</div>';
   h+='</div></div>';
 
-  // 成绩
   let scores='';
   if(gpa)scores+='<div class="score-box"><div class="score-lbl">GPA</div><div class="score-val c-blue">'+gpa+'</div><div class="score-sub">/ '+gpaScale+'</div>'+bar(parseFloat(gpa),parseFloat(gpaScale)||4,'f-blue')+'</div>';
   if(sat)scores+='<div class="score-box"><div class="score-lbl">SAT 总分</div><div class="score-val c-teal">'+sat+'</div><div class="score-sub">'+(satMath?'数'+satMath+' ':'')+(satEbrw?'文'+satEbrw:'')+'</div>'+bar(parseInt(sat),1600,'f-teal')+'</div>';
@@ -330,46 +334,38 @@ function renderDetail(s, idx) {
   if(satRetake)scores+='<div class="score-box"><div class="score-lbl">SAT 再考</div><div class="score-val c-amber" style="font-size:14px;padding-top:5px">'+satRetake+'</div><div class="score-sub">计划</div></div>';
   if(scores)h+='<div class="card"><div class="card-sec"><div class="sec-label">成绩概览</div><div class="scores-grid">'+scores+'</div></div></div>';
 
-  // AP
   if(aps.length){h+='<div class="card"><div class="card-sec"><div class="sec-label">AP 成绩</div><div class="ap-wrap">';aps.forEach(a=>{h+='<div class="ap-chip">'+a.n+(a.sc?' <span class="ap-badge '+apCls(a.sc)+'">'+a.sc+'</span>':'')+'</div>';});h+='</div></div></div>';}
 
-  // 活动
   h+='<div class="card"><div class="card-sec"><div class="sec-label">课外活动</div>';
   if(acts.length){acts.forEach((a,i)=>{h+='<div class="act-item"><div class="act-num">'+(i+1)+'</div><div class="act-body">'+(a.type||a.role?'<div class="act-type">'+[a.type,a.role].filter(Boolean).join(' · ')+'</div>':'')+'<div class="act-name">'+(a.name||'未填写名称')+'</div>'+(a.desc?'<div class="act-desc">'+a.desc+'</div>':'')+(a.hrs||a.period?'<div class="act-foot">'+(a.hrs?'<span class="act-ft">⏱ '+a.hrs+'h/周</span>':'')+(a.period?'<span class="act-ft">📅 '+a.period+'</span>':'')+'</div>':'')+'</div></div>';});}
   else{h+='<div class="warn">⚠️ 活动信息待补充</div>';}
   h+='</div></div>';
 
-  // 奖项
   if(honors.length){h+='<div class="card"><div class="card-sec"><div class="sec-label">荣誉奖项</div><div class="honors-wrap">';honors.forEach(hn=>{h+='<div class="honor-chip"><span>🏆</span><div><div class="honor-name">'+hn.n+'</div>'+(hn.lv||hn.gr?'<div class="honor-sub">'+[hn.lv,hn.gr].filter(Boolean).join(' · ')+'</div>':'')+'</div></div>';});h+='</div></div></div>';}
 
-  // 意向
   h+='<div class="card"><div class="card-sec"><div class="sec-label">申请意向 & 偏好</div><div class="intent-grid"><div class="intent-box"><div class="intent-lbl">意向专业</div><div class="intent-tags">'+(major1?'<span class="itag">'+major1+'</span>':'')+(major2?'<span class="itag">'+major2+'</span>':'')+(major3?'<span class="itag">'+major3+'</span>':'')+(!major1&&!major2&&!major3?'<span class="itag gray">待填写</span>':'')+'</div></div><div class="intent-box"><div class="intent-lbl">申请策略</div><div class="intent-tags">'+(appRound?'<span class="itag amber">'+appRound+'</span>':'')+(tendency?'<span class="itag teal">'+tendency+'</span>':'')+(enrollTerm?'<span class="itag">'+enrollTerm+'</span>':'')+'</div></div><div class="intent-box"><div class="intent-lbl">地区 & 规模</div><div class="intent-tags"><span class="itag gray">'+(region||'地区不限')+'</span><span class="itag gray">'+(schoolSize||'规模不限')+'</span></div></div><div class="intent-box"><div class="intent-lbl">经济 & 财援</div><div class="intent-tags"><span class="itag gray">'+(budget||'预算待定')+'</span><span class="itag gray">'+(aidNeeded||'财援待定')+'</span></div></div></div>'+(targetSchools?'<div style="margin-top:10px;padding:9px 13px;border-radius:6px;background:var(--blue-light);border:1px solid #bdd5fb;font-size:12px;color:var(--label)">🎯 意向学校：'+targetSchools+'</div>':'')+'</div></div>';
 
-  // 文书
   h+='<div class="card"><div class="card-sec"><div class="sec-label">文书素材（自述）</div><div class="essay-grid"><div class="essay-box"><div class="essay-q">❓ 最骄傲的事</div><div class="essay-a'+(proudest?'':' empty')+'">'+(proudest||'待填写')+'</div></div><div class="essay-box"><div class="essay-q">🔄 改变你的经历</div><div class="essay-a'+(lifeEvent?'':' empty')+'">'+(lifeEvent||'待填写')+'</div></div><div class="essay-box"><div class="essay-q">🎯 为什么选这个专业</div><div class="essay-a'+(whyMajor?'':' empty')+'">'+(whyMajor||'待填写')+'</div></div><div class="essay-box"><div class="essay-q">✨ 与众不同之处</div><div class="essay-a'+(unique?'':' empty')+'">'+(unique||'待填写')+'</div></div></div></div></div>';
 
-  // ── 选校管理 ──
-  h+='<div class="card" id="schools-card"><div class="card-sec"><div class="sec-label">最终选校管理</div>';
+  // 选校管理
+  h+='<div class="card"><div class="card-sec"><div class="sec-label">最终选校管理</div>';
   h+='<div id="schools-input-area">'+renderSchoolInputs()+'</div>';
   h+='<div style="display:flex;gap:8px;margin-top:10px;align-items:center">';
   h+='<button class="add-school-btn" onclick="addSchoolRow()">+ 添加学校</button>';
   h+='<button class="save-schools-btn" id="save-schools-btn" onclick="saveSchools('+idx+')">💾 保存选校</button>';
-  if(currentSchools.length>0){h+='<span style="font-size:11px;color:var(--green)">✅ 已保存 '+currentSchools.length+' 所</span>';}
+  h+='<span id="saved-hint" style="font-size:11px;color:var(--green)">'+(currentSchools.length>0?'✅ 已保存 '+currentSchools.length+' 所':'')+'</span>';
   h+='</div></div></div>';
 
-  // ── DDL 清单 ──
-  h+='<div class="card"><div class="card-sec"><div class="sec-label">申请 DDL 清单</div>';
+  // DDL
+  h+='<div class="card"><div class="card-sec" id="ddl-sec"><div class="sec-label">申请 DDL 清单</div>';
   if(currentDDL){
     h+=renderDDL(currentDDL);
   } else {
-    h+='<div style="display:flex;gap:10px;align-items:center">';
-    h+='<button class="gen-ddl-btn" id="gen-ddl-btn" onclick="generateDDL('+idx+', this)">📅 生成 DDL 清单</button>';
-    h+='<span style="font-size:11px;color:var(--muted)">需先保存选校，约15秒</span>';
-    h+='</div>';
+    h+='<div style="display:flex;gap:10px;align-items:center"><button class="gen-ddl-btn" id="gen-ddl-btn" onclick="generateDDL('+idx+', this)">📅 生成 DDL 清单</button><span style="font-size:11px;color:var(--muted)">需先保存选校，约15秒</span></div>';
   }
   h+='</div></div>';
 
-  // 联系 + 操作按钮
+  // 联系 + 操作
   h+='<div class="card"><div class="card-sec"><div class="sec-label">联系信息</div><div class="info-grid">'+(wechat?'<div><div class="info-key">微信</div><div class="info-val">'+wechat+'</div></div>':'')+(phone?'<div><div class="info-key">手机</div><div class="info-val">'+phone+'</div></div>':'')+(email?'<div><div class="info-key">邮箱</div><div class="info-val">'+email+'</div></div>':'')+(gender?'<div><div class="info-key">性别</div><div class="info-val">'+gender+'</div></div>':'')+(dob?'<div><div class="info-key">出生日期</div><div class="info-val">'+dob+'</div></div>':'')+(nationality?'<div><div class="info-key">国籍</div><div class="info-val">'+nationality+'</div></div>':'')+'</div>'+(appNotes?'<div class="note-box">📝 申请备注：'+appNotes+'</div>':'')+'<div style="margin-top:8px;font-size:11px;color:var(--muted)">填表时间：'+timestamp+'</div><div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);display:flex;gap:10px;align-items:center"><button class="rec-btn" id="rec-btn-'+idx+'" onclick="generateRec('+idx+', this)">🎯 生成定校建议</button><button class="delete-btn" onclick="confirmDelete('+idx+', \''+nameCN+'\')">🗑 删除此学生</button></div></div></div>';
 
   h+='</div>';
@@ -377,24 +373,18 @@ function renderDetail(s, idx) {
   document.getElementById('detail').scrollTop = 0;
 }
 
-// ── 选校输入区 ──
-let schoolRows = [];
-
 function renderSchoolInputs() {
-  // 从已保存数据初始化
   if (currentSchools.length > 0 && schoolRows.length === 0) {
     schoolRows = currentSchools.map(s => ({
-      schoolCN: s['学校中文名'] || '',
-      school: s['学校英文名'] || '',
-      category: s['类别'] || '匹配',
-      appType: s['申请方式'] || 'RD',
+      schoolCN: s['学校中文名']||'', school: s['学校英文名']||'',
+      category: s['类别']||'匹配', appType: s['申请方式']||'RD',
     }));
   }
-  if (schoolRows.length === 0) schoolRows = [{ schoolCN: '', school: '', category: '冲刺', appType: 'ED' }];
-  return schoolRows.map((r, i) => `
-    <div class="school-input-row" id="school-row-${i}">
-      <input placeholder="中文名" value="${r.schoolCN}" oninput="schoolRows[${i}].schoolCN=this.value" style="width:110px" />
-      <input placeholder="English Name" value="${r.school}" oninput="schoolRows[${i}].school=this.value" style="width:160px" />
+  if (schoolRows.length === 0) schoolRows = [{ schoolCN:'', school:'', category:'冲刺', appType:'ED' }];
+  return schoolRows.map((r,i) => `
+    <div class="school-input-row">
+      <input placeholder="中文名" value="${r.schoolCN}" oninput="schoolRows[${i}].schoolCN=this.value" style="width:100px" />
+      <input placeholder="English Name" value="${r.school}" oninput="schoolRows[${i}].school=this.value" style="width:150px" />
       <select onchange="schoolRows[${i}].category=this.value">
         <option value="冲刺" ${r.category==='冲刺'?'selected':''}>冲刺</option>
         <option value="匹配" ${r.category==='匹配'?'selected':''}>匹配</option>
@@ -410,65 +400,57 @@ function renderSchoolInputs() {
 }
 
 function addSchoolRow() {
-  schoolRows.push({ schoolCN: '', school: '', category: '匹配', appType: 'RD' });
+  schoolRows.push({ schoolCN:'', school:'', category:'匹配', appType:'RD' });
   document.getElementById('schools-input-area').innerHTML = renderSchoolInputs();
 }
-
 function removeSchoolRow(i) {
-  schoolRows.splice(i, 1);
+  schoolRows.splice(i,1);
   document.getElementById('schools-input-area').innerHTML = renderSchoolInputs();
 }
 
 async function saveSchools(idx) {
   const btn = document.getElementById('save-schools-btn');
-  btn.disabled = true; btn.textContent = '保存中...';
+  btn.disabled=true; btn.textContent='保存中...';
   const email = v(allStudents[idx]['邮箱']);
   const nameCN = v(allStudents[idx]['中文姓名']);
-  if (!email) { alert('该学生没有邮箱，无法保存选校'); btn.disabled=false; btn.textContent='💾 保存选校'; return; }
-  const valid = schoolRows.filter(r => r.school || r.schoolCN);
+  if (!email) { alert('该学生没有邮箱'); btn.disabled=false; btn.textContent='💾 保存选校'; return; }
+  const valid = schoolRows.filter(r=>r.school||r.schoolCN);
   if (!valid.length) { alert('请至少填写一所学校'); btn.disabled=false; btn.textContent='💾 保存选校'; return; }
   try {
     const res = await fetch('/api/schools', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ studentEmail: email, studentName: nameCN, schools: valid, operator: '顾问' }),
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ studentEmail:email, studentName:nameCN, schools:valid, operator:'顾问' }),
     });
     const data = await res.json();
     if (!data.success) throw new Error(data.error);
     currentSchools = valid;
-    btn.textContent = '✅ 已保存';
-    setTimeout(() => { btn.disabled=false; btn.textContent='💾 保存选校'; }, 2000);
+    const hint = document.getElementById('saved-hint');
+    if (hint) hint.textContent = '✅ 已保存 ' + valid.length + ' 所';
+    btn.textContent='✅ 已保存';
+    setTimeout(()=>{ btn.disabled=false; btn.textContent='💾 保存选校'; },2000);
   } catch(e) {
-    alert('保存失败：' + e.message);
+    alert('保存失败：'+e.message);
     btn.disabled=false; btn.textContent='💾 保存选校';
   }
 }
 
-// ── DDL 生成 ──
 async function generateDDL(idx, btn) {
-  if (!currentSchools.length && !schoolRows.filter(r=>r.school||r.schoolCN).length) {
-    alert('请先保存选校再生成 DDL'); return;
-  }
-  btn.disabled = true; btn.textContent = '⏳ 生成中，约15秒...';
-  const schools = currentSchools.length ? currentSchools.map(s => ({
-    school: s['学校英文名'] || s.school || '',
-    schoolCN: s['学校中文名'] || s.schoolCN || '',
-    appType: s['申请方式'] || s.appType || 'RD',
-  })) : schoolRows.filter(r=>r.school||r.schoolCN);
+  const schools = currentSchools.length
+    ? currentSchools.map(s=>({ school:s['学校英文名']||s.school||'', schoolCN:s['学校中文名']||s.schoolCN||'', appType:s['申请方式']||s.appType||'RD' }))
+    : schoolRows.filter(r=>r.school||r.schoolCN);
+  if (!schools.length) { alert('请先保存选校再生成 DDL'); return; }
+  btn.disabled=true; btn.textContent='⏳ 生成中，约15秒...';
   try {
     const res = await fetch('/api/ddl', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ schools, studentName: v(allStudents[idx]['中文姓名']) }),
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ schools, studentName:v(allStudents[idx]['中文姓名']) }),
     });
     const data = await res.json();
     if (!data.success) throw new Error(data.error);
     currentDDL = data.data;
-    // 重新渲染 DDL 区块
-    const ddlCard = document.querySelector('.card:nth-last-child(2) .card-sec');
-    if (ddlCard) ddlCard.innerHTML = '<div class="sec-label">申请 DDL 清单</div>' + renderDDL(currentDDL);
+    document.getElementById('ddl-sec').innerHTML = '<div class="sec-label">申请 DDL 清单</div>' + renderDDL(currentDDL);
   } catch(e) {
-    alert('生成失败：' + e.message);
+    alert('生成失败：'+e.message);
     btn.disabled=false; btn.textContent='📅 生成 DDL 清单';
   }
 }
@@ -477,71 +459,90 @@ function renderDDL(data) {
   if (!data || !data.schools) return '<div class="warn">DDL 数据异常</div>';
   const today = new Date();
   let h = '';
-  if (data.summary) h += '<div class="ddl-summary">💡 ' + data.summary + '</div>';
+  if (data.summary) h += '<div class="ddl-summary">💡 '+data.summary+'</div>';
   data.schools.forEach(sc => {
-    const appTypeCls = sc.appType === 'ED' ? 'ddl-app-ed' : sc.appType === 'EA' ? 'ddl-app-ea' : 'ddl-app-rd';
+    const appTypeCls = sc.appType==='ED'?'ddl-app-ed':sc.appType==='EA'?'ddl-app-ea':'ddl-app-rd';
     h += '<div class="ddl-school-block">';
-    h += '<div class="ddl-school-name">'+( sc.schoolCN||sc.school)+' <span style="color:var(--muted);font-weight:400;font-size:12px">'+sc.school+'</span><span class="ddl-app-type '+appTypeCls+'">'+sc.appType+'</span></div>';
+    h += '<div class="ddl-school-name">'+(sc.schoolCN||sc.school)+' <span style="color:var(--muted);font-weight:400;font-size:12px">'+sc.school+'</span><span class="ddl-app-type '+appTypeCls+'">'+sc.appType+'</span></div>';
     h += '<div class="ddl-list">';
-    (sc.deadlines || []).sort((a,b) => new Date(a.date)-new Date(b.date)).forEach(d => {
+    (sc.deadlines||[]).sort((a,b)=>new Date(a.date)-new Date(b.date)).forEach(d => {
+      const key = safeId(sc.school+'_'+d.type+'_'+d.date);
+      const checkin = currentCheckins[key];
+      const done = checkin && checkin.status === '已完成';
       const ddlDate = new Date(d.date);
-      const diffDays = Math.ceil((ddlDate - today) / 86400000);
-      const dateCls = diffDays < 14 ? 'ddl-date urgent' : diffDays < 30 ? 'ddl-date soon' : 'ddl-date';
-      h += '<div class="ddl-item"><div class="'+dateCls+'">'+d.date+'</div><div class="ddl-type">'+d.type+'</div>'+(d.note?'<div class="ddl-note">'+d.note+'</div>':'')+'</div>';
+      const diffDays = Math.ceil((ddlDate-today)/86400000);
+      const dateCls = done ? 'ddl-date' : diffDays<14 ? 'ddl-date urgent' : diffDays<30 ? 'ddl-date soon' : 'ddl-date';
+      const whoText = checkin ? `<div class="ddl-who">${checkin.operator} · ${checkin.time}</div>` : '';
+      h += `<div class="ddl-item${done?' done':''}" id="item_${key}">
+        <input type="checkbox" class="ddl-check" ${done?'checked':''} onchange="toggleCheckin('${sc.school}','${d.type}','${d.date}','${key}',this)" />
+        <div class="${dateCls}">${d.date}</div>
+        <div class="ddl-type">${d.type}</div>
+        ${d.note?'<div class="ddl-note">'+d.note+'</div>':''}
+        ${whoText}
+      </div>`;
     });
     h += '</div></div>';
   });
-  h += '<div style="margin-top:10px;display:flex;gap:8px"><button class="gen-ddl-btn" onclick="regenerateDDL()">🔄 重新生成</button></div>';
+  h += '<div style="margin-top:10px"><button class="gen-ddl-btn" onclick="regenDDL()">🔄 重新生成</button></div>';
   return h;
 }
 
-function regenerateDDL() {
-  currentDDL = null;
-  const ddlSec = document.querySelector('.card:nth-last-child(2) .card-sec');
-  if (ddlSec) ddlSec.innerHTML = '<div class="sec-label">申请 DDL 清单</div><div style="display:flex;gap:10px;align-items:center"><button class="gen-ddl-btn" id="gen-ddl-btn" onclick="generateDDL('+currentIdx+', this)">📅 生成 DDL 清单</button><span style="font-size:11px;color:var(--muted)">需先保存选校，约15秒</span></div>';
-}
-
-// ── 生成报告 ──
-async function generateRec(idx, btn) {
-  btn.disabled = true;
-  btn.textContent = '⏳ AI 分析中，约30秒...';
+async function toggleCheckin(school, ddlType, ddlDate, key, checkbox) {
+  const checked = checkbox.checked;
+  const itemEl = document.getElementById('item_'+key);
+  if (itemEl) itemEl.classList.toggle('done', checked);
   try {
-    const res = await fetch('/api/recommend', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(allStudents[idx]),
+    await fetch('/api/checkin', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        studentEmail: currentEmail, school, ddlType, ddlDate,
+        checked, operator:'顾问', operatorType:'顾问',
+      }),
     });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({ error: '未知错误' }));
-      throw new Error(err.error || '生成失败');
-    }
-    const data = await res.json();
-    if (!data.success) throw new Error(data.error);
-    const dl = (b64, filename) => {
-      const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
-      const blob = new Blob([bytes], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = filename;
-      a.click();
-      URL.revokeObjectURL(a.href);
-    };
-    dl(data.studentDoc, data.filename + '_定校建议（学生版）.doc');
-    setTimeout(() => dl(data.advisorDoc, data.filename + '_定校建议（顾问版）.doc'), 800);
-    btn.textContent = '✅ 已下载两个文件';
-    setTimeout(() => { btn.textContent = '🎯 生成定校建议'; btn.disabled = false; }, 4000);
+    const ts = new Date().toLocaleString('zh-CN',{timeZone:'Asia/Shanghai'});
+    currentCheckins[key] = { status: checked?'已完成':'未完成', operator:'顾问', time:ts };
   } catch(e) {
-    alert('生成失败：' + e.message);
-    btn.textContent = '🎯 生成定校建议';
-    btn.disabled = false;
+    checkbox.checked = !checked;
+    if (itemEl) itemEl.classList.toggle('done', !checked);
+    alert('保存失败：'+e.message);
   }
 }
 
-// ── 删除 ──
+function regenDDL() {
+  currentDDL = null;
+  document.getElementById('ddl-sec').innerHTML = '<div class="sec-label">申请 DDL 清单</div><div style="display:flex;gap:10px;align-items:center"><button class="gen-ddl-btn" id="gen-ddl-btn" onclick="generateDDL('+currentIdx+', this)">📅 生成 DDL 清单</button><span style="font-size:11px;color:var(--muted)">需先保存选校，约15秒</span></div>';
+}
+
+async function generateRec(idx, btn) {
+  btn.disabled=true; btn.textContent='⏳ AI 分析中，约30秒...';
+  try {
+    const res = await fetch('/api/recommend', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(allStudents[idx]),
+    });
+    if (!res.ok) { const err=await res.json().catch(()=>({error:'未知错误'})); throw new Error(err.error||'生成失败'); }
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error);
+    const dl = (b64, filename) => {
+      const bytes = Uint8Array.from(atob(b64), c=>c.charCodeAt(0));
+      const blob = new Blob([bytes],{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+      const a = document.createElement('a');
+      a.href=URL.createObjectURL(blob); a.download=filename; a.click(); URL.revokeObjectURL(a.href);
+    };
+    dl(data.studentDoc, data.filename+'_定校建议（学生版）.doc');
+    setTimeout(()=>dl(data.advisorDoc, data.filename+'_定校建议（顾问版）.doc'),800);
+    btn.textContent='✅ 已下载两个文件';
+    setTimeout(()=>{ btn.textContent='🎯 生成定校建议'; btn.disabled=false; },4000);
+  } catch(e) {
+    alert('生成失败：'+e.message);
+    btn.textContent='🎯 生成定校建议'; btn.disabled=false;
+  }
+}
+
 function confirmDelete(idx, name) {
   const overlay = document.createElement('div');
-  overlay.className = 'confirm-overlay';
-  overlay.innerHTML = '<div class="confirm-box"><h3>🗑 删除学生档案</h3><p>确定要删除 <strong>'+name+'</strong> 的档案吗？<br>此操作将从 Google Sheet 中永久删除该行数据，无法恢复。</p><div class="confirm-btns"><button class="btn-cancel" onclick="this.closest(\'.confirm-overlay\').remove()">取消</button><button class="btn-del-confirm" onclick="deleteStudent('+idx+')">确认删除</button></div></div>';
+  overlay.className='confirm-overlay';
+  overlay.innerHTML='<div class="confirm-box"><h3>🗑 删除学生档案</h3><p>确定要删除 <strong>'+name+'</strong> 的档案吗？<br>此操作将从 Google Sheet 中永久删除该行数据，无法恢复。</p><div class="confirm-btns"><button class="btn-cancel" onclick="this.closest(\'.confirm-overlay\').remove()">取消</button><button class="btn-del-confirm" onclick="deleteStudent('+idx+')">确认删除</button></div></div>';
   document.body.appendChild(overlay);
 }
 
@@ -549,16 +550,13 @@ async function deleteStudent(idx) {
   document.querySelector('.confirm-overlay')?.remove();
   try {
     const res = await fetch('/api/delete', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ rowIndex: idx }),
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ rowIndex:idx }),
     });
     const data = await res.json();
     if (!data.success) throw new Error(data.error);
     await loadStudents();
-  } catch(e) {
-    alert('删除失败：' + e.message);
-  }
+  } catch(e) { alert('删除失败：'+e.message); }
 }
 
 loadStudents();
