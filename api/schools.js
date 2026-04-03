@@ -12,12 +12,14 @@ function getAuth() {
 
 async function writeLog(sheets, spreadsheetId, { operator, operatorType, studentEmail, action, detail }) {
   const ts = new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' });
-  await sheets.spreadsheets.values.append({
-    spreadsheetId,
-    range: 'logs!A:F',
-    valueInputOption: 'RAW',
-    requestBody: { values: [[ts, operator, operatorType, studentEmail, action, detail]] },
-  });
+  try {
+    await sheets.spreadsheets.values.append({
+      spreadsheetId,
+      range: 'logs!A:F',
+      valueInputOption: 'RAW',
+      requestBody: { values: [[ts, operator, operatorType, studentEmail, action, detail]] },
+    });
+  } catch(e) { /* logs tab 不存在时静默失败 */ }
 }
 
 export default async function handler(req, res) {
@@ -56,19 +58,21 @@ export default async function handler(req, res) {
   if (req.method === 'POST') {
     try {
       const { studentEmail, studentName, schools, operator } = req.body;
-      if (!studentEmail || !schools || !schools.length) {
+      if (!studentEmail || !schools.length) {
         return res.status(400).json({ success: false, error: '缺少必要字段' });
       }
 
       const ts = new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' });
 
-      // 读取全部现有数据
+      // 读取 schools tab 全部数据
       const existing = await sheets.spreadsheets.values.get({
         spreadsheetId,
         range: 'schools!A:I',
       });
       const allRows = existing.data.values || [];
-      const headers = allRows[0] || ['学生邮箱','中文姓名','学校英文名','学校中文名','类别','申请方式','状态','录入时间','录入人'];
+      const headers = allRows.length > 0
+        ? allRows[0]
+        : ['学生邮箱','中文姓名','学校英文名','学校中文名','类别','申请方式','状态','录入时间','录入人'];
 
       // 过滤掉该学生旧记录
       const otherRows = allRows.slice(1).filter(row => (row[0]||'').trim() !== studentEmail.trim());
@@ -88,19 +92,21 @@ export default async function handler(req, res) {
 
       const finalRows = [headers, ...otherRows, ...newRows];
 
-      // 先 clear 整个 sheet（保留表头行以外全清）
-      await sheets.spreadsheets.values.clear({
+      // 写回 schools tab
+      await sheets.spreadsheets.values.update({
         spreadsheetId,
-        range: 'schools!A2:I10000',
+        range: 'schools!A1',
+        valueInputOption: 'RAW',
+        requestBody: { values: finalRows },
       });
 
-      // 再写回
-      if (finalRows.length > 1) {
-        await sheets.spreadsheets.values.update({
+      // 清掉多余的旧行（精确到 schools tab）
+      const oldDataLen = allRows.length;
+      const newDataLen = finalRows.length;
+      if (oldDataLen > newDataLen) {
+        await sheets.spreadsheets.values.clear({
           spreadsheetId,
-          range: 'schools!A1',
-          valueInputOption: 'RAW',
-          requestBody: { values: finalRows },
+          range: `schools!A${newDataLen + 1}:I${oldDataLen}`,
         });
       }
 
