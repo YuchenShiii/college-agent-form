@@ -20,12 +20,6 @@ async function writeLog(sheets, spreadsheetId, { operator, operatorType, student
   });
 }
 
-async function getSheetId(sheets, spreadsheetId, sheetName) {
-  const meta = await sheets.spreadsheets.get({ spreadsheetId });
-  const sheet = meta.data.sheets.find(s => s.properties.title === sheetName);
-  return sheet ? sheet.properties.sheetId : 0;
-}
-
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -66,41 +60,21 @@ export default async function handler(req, res) {
         return res.status(400).json({ success: false, error: '缺少必要字段' });
       }
 
-      const sheetId = await getSheetId(sheets, spreadsheetId, 'schools');
+      const ts = new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' });
 
-      // 读取 A 列，找该学生所有行（倒序删，避免行号偏移）
+      // 读取全部现有数据
       const existing = await sheets.spreadsheets.values.get({
         spreadsheetId,
-        range: 'schools!A:A',
+        range: 'schools!A:I',
       });
-      const existRows = existing.data.values || [];
-      const toDelete = existRows
-        .map((r, i) => (i > 0 && (r[0]||'').trim() === studentEmail.trim()) ? i : null)
-        .filter(i => i !== null)
-        .sort((a, b) => b - a); // 倒序
+      const allRows = existing.data.values || [];
+      const headers = allRows[0] || ['学生邮箱','中文姓名','学校英文名','学校中文名','类别','申请方式','状态','录入时间','录入人'];
 
-      // 逐行删除（倒序保证行号不偏移）
-      for (const rowIdx of toDelete) {
-        await sheets.spreadsheets.batchUpdate({
-          spreadsheetId,
-          requestBody: {
-            requests: [{
-              deleteDimension: {
-                range: {
-                  sheetId,
-                  dimension: 'ROWS',
-                  startIndex: rowIdx,      // 0-indexed
-                  endIndex: rowIdx + 1,
-                },
-              },
-            }],
-          },
-        });
-      }
+      // 过滤掉该学生的旧记录，保留其他学生
+      const otherRows = allRows.slice(1).filter(row => (row[0]||'').trim() !== studentEmail.trim());
 
-      // 写入新选校
-      const ts = new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' });
-      const rows = schools.map(s => [
+      // 新记录
+      const newRows = schools.map(s => [
         studentEmail.trim(),
         studentName || '',
         s.school || '',
@@ -111,13 +85,19 @@ export default async function handler(req, res) {
         ts,
         operator || '顾问',
       ]);
-      await sheets.spreadsheets.values.append({
+
+      // 合并：表头 + 其他学生 + 该学生新记录
+      const finalRows = [headers, ...otherRows, ...newRows];
+
+      // 整体覆盖写回
+      await sheets.spreadsheets.values.update({
         spreadsheetId,
-        range: 'schools!A:I',
+        range: 'schools!A1',
         valueInputOption: 'RAW',
-        requestBody: { values: rows },
+        requestBody: { values: finalRows },
       });
 
+      // 写日志
       await writeLog(sheets, spreadsheetId, {
         operator: operator || '顾问',
         operatorType: '顾问',
