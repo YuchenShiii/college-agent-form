@@ -14,8 +14,7 @@
       --amber: #d97706; --amber-light: #fffbeb;
       --green: #059669; --green-light: #ecfdf5;
       --purple: #7c3aed; --purple-light: #f5f3ff;
-      --sidebar-w: 260px;
-      --topbar-h: 52px;
+      --sidebar-w: 260px; --topbar-h: 52px;
     }
     body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
     .topbar { height: var(--topbar-h); background: var(--blue-dark); display: flex; align-items: center; padding: 0 20px; gap: 16px; flex-shrink: 0; box-shadow: 0 2px 6px rgba(18,81,181,0.35); z-index: 50; }
@@ -120,6 +119,17 @@
     .info-val { font-size: 13px; }
     .warn { font-size: 11px; color: #92400e; padding: 8px 11px; border-radius: 6px; background: #fffbeb; border: 1px solid #fcd34d; }
     .note-box { padding: 9px 13px; border-radius: 6px; background: var(--blue-light); border: 1px solid #bdd5fb; font-size: 12px; color: var(--label); margin-top: 10px; }
+    .delete-btn { display: inline-flex; align-items: center; gap: 5px; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid #fca5a5; background: #fef2f2; color: #dc2626; }
+    .delete-btn:hover { background: #fee2e2; }
+    .confirm-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 200; display: flex; align-items: center; justify-content: center; }
+    .confirm-box { background: #fff; border-radius: 12px; padding: 26px 28px; max-width: 360px; width: 90%; box-shadow: 0 8px 32px rgba(0,0,0,0.18); }
+    .confirm-box h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+    .confirm-box p { font-size: 13px; color: var(--muted); margin-bottom: 20px; line-height: 1.6; }
+    .confirm-btns { display: flex; gap: 8px; justify-content: flex-end; }
+    .btn-cancel { padding: 7px 16px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid var(--border2); background: #fff; color: var(--label); }
+    .btn-cancel:hover { background: var(--bg); }
+    .btn-del-confirm { padding: 7px 16px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; background: #dc2626; color: #fff; }
+    .btn-del-confirm:hover { background: #b91c1c; }
     @keyframes spin { to { transform: rotate(360deg); } }
     @media (max-width: 700px) {
       .sidebar{width:200px} .scores-grid{grid-template-columns:repeat(3,1fr)}
@@ -163,6 +173,7 @@
 
 <script>
 let allStudents = [];
+let currentIdx = null;
 const v = s => (s || '').trim();
 
 async function loadStudents() {
@@ -211,13 +222,14 @@ function filterList() {
 }
 
 function selectStudent(idx) {
+  currentIdx = idx;
   document.querySelectorAll('.student-list-item').forEach(el => el.classList.remove('active'));
   const el = document.getElementById('sli-'+idx);
   if (el) el.classList.add('active');
-  renderDetail(allStudents[idx]);
+  renderDetail(allStudents[idx], idx);
 }
 
-function renderDetail(s) {
+function renderDetail(s, idx) {
   const nameCN = v(s['中文姓名'])||'未填写', nameEN = v(s['英文姓名']);
   const grade = v(s['年级']), gradYear = v(s['毕业年份']);
   const school = v(s['高中名称']), schoolType = v(s['高中类型']), city = v(s['高中城市']);
@@ -234,11 +246,11 @@ function renderDetail(s) {
   const timestamp = v(s['时间戳']);
 
   const aps = [];
-  for (let i=1;i<=8;i++){const n=v(s['AP'+i+'课程']),sc=v(s['AP'+i+'分数']);if(n)aps.push({n,sc});}
+  for(let i=1;i<=8;i++){const n=v(s['AP'+i+'课程']),sc=v(s['AP'+i+'分数']);if(n)aps.push({n,sc});}
   const acts = [];
-  for (let i=1;i<=10;i++){const type=v(s['活动'+i+'类别']),role=v(s['活动'+i+'职位']),name=v(s['活动'+i+'名称']),desc=v(s['活动'+i+'描述']),hrs=v(s['活动'+i+'每周时长']),period=v(s['活动'+i+'时间段']);if(name||type)acts.push({type,role,name,desc,hrs,period});}
-  const honors = [];
-  for (let i=1;i<=5;i++){const n=v(s['奖项'+i+'名称']),lv=v(s['奖项'+i+'级别']),gr=v(s['奖项'+i+'年级']);if(n)honors.push({n,lv,gr});}
+  for(let i=1;i<=10;i++){const type=v(s['活动'+i+'类别']),role=v(s['活动'+i+'职位']),name=v(s['活动'+i+'名称']),desc=v(s['活动'+i+'描述']),hrs=v(s['活动'+i+'每周时长']),period=v(s['活动'+i+'时间段']);if(name||type)acts.push({type,role,name,desc,hrs,period});}
+  const honors=[];
+  for(let i=1;i<=5;i++){const n=v(s['奖项'+i+'名称']),lv=v(s['奖项'+i+'级别']),gr=v(s['奖项'+i+'年级']);if(n)honors.push({n,lv,gr});}
 
   function bar(val,max,cls){return '<div class="score-bar"><div class="score-fill '+cls+'" style="width:'+Math.min(Math.round(val/max*100),100)+'%"></div></div>';}
   function apCls(sc){const n=parseInt(sc);return n>=5?'ap-5':n>=4?'ap-4':n>=3?'ap-3':'ap-x';}
@@ -288,12 +300,35 @@ function renderDetail(s) {
   // 文书
   h+='<div class="card"><div class="card-sec"><div class="sec-label">文书素材（自述）</div><div class="essay-grid"><div class="essay-box"><div class="essay-q">❓ 最骄傲的事</div><div class="essay-a'+(proudest?'':' empty')+'">'+(proudest||'待填写')+'</div></div><div class="essay-box"><div class="essay-q">🔄 改变你的经历</div><div class="essay-a'+(lifeEvent?'':' empty')+'">'+(lifeEvent||'待填写')+'</div></div><div class="essay-box"><div class="essay-q">🎯 为什么选这个专业</div><div class="essay-a'+(whyMajor?'':' empty')+'">'+(whyMajor||'待填写')+'</div></div><div class="essay-box"><div class="essay-q">✨ 与众不同之处</div><div class="essay-a'+(unique?'':' empty')+'">'+(unique||'待填写')+'</div></div></div></div></div>';
 
-  // 联系
-  h+='<div class="card"><div class="card-sec"><div class="sec-label">联系信息</div><div class="info-grid">'+(wechat?'<div><div class="info-key">微信</div><div class="info-val">'+wechat+'</div></div>':'')+(phone?'<div><div class="info-key">手机</div><div class="info-val">'+phone+'</div></div>':'')+(email?'<div><div class="info-key">邮箱</div><div class="info-val">'+email+'</div></div>':'')+(gender?'<div><div class="info-key">性别</div><div class="info-val">'+gender+'</div></div>':'')+(dob?'<div><div class="info-key">出生日期</div><div class="info-val">'+dob+'</div></div>':'')+(nationality?'<div><div class="info-key">国籍</div><div class="info-val">'+nationality+'</div></div>':'')+'</div>'+(appNotes?'<div class="note-box">📝 申请备注：'+appNotes+'</div>':'')+'<div style="margin-top:8px;font-size:11px;color:var(--muted)">填表时间：'+timestamp+'</div></div></div>';
+  // 联系 + 删除
+  h+='<div class="card"><div class="card-sec"><div class="sec-label">联系信息</div><div class="info-grid">'+(wechat?'<div><div class="info-key">微信</div><div class="info-val">'+wechat+'</div></div>':'')+(phone?'<div><div class="info-key">手机</div><div class="info-val">'+phone+'</div></div>':'')+(email?'<div><div class="info-key">邮箱</div><div class="info-val">'+email+'</div></div>':'')+(gender?'<div><div class="info-key">性别</div><div class="info-val">'+gender+'</div></div>':'')+(dob?'<div><div class="info-key">出生日期</div><div class="info-val">'+dob+'</div></div>':'')+(nationality?'<div><div class="info-key">国籍</div><div class="info-val">'+nationality+'</div></div>':'')+'</div>'+(appNotes?'<div class="note-box">📝 申请备注：'+appNotes+'</div>':'')+'<div style="margin-top:8px;font-size:11px;color:var(--muted)">填表时间：'+timestamp+'</div><div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border)"><button class="delete-btn" onclick="confirmDelete('+idx+', \''+nameCN+'\')">🗑 删除此学生</button></div></div></div>';
 
   h+='</div>';
   document.getElementById('detail').innerHTML = h;
   document.getElementById('detail').scrollTop = 0;
+}
+
+function confirmDelete(idx, name) {
+  const overlay = document.createElement('div');
+  overlay.className = 'confirm-overlay';
+  overlay.innerHTML = '<div class="confirm-box"><h3>🗑 删除学生档案</h3><p>确定要删除 <strong>'+name+'</strong> 的档案吗？<br>此操作将从 Google Sheet 中永久删除该行数据，无法恢复。</p><div class="confirm-btns"><button class="btn-cancel" onclick="this.closest(\'.confirm-overlay\').remove()">取消</button><button class="btn-del-confirm" onclick="deleteStudent('+idx+')">确认删除</button></div></div>';
+  document.body.appendChild(overlay);
+}
+
+async function deleteStudent(idx) {
+  document.querySelector('.confirm-overlay')?.remove();
+  try {
+    const res = await fetch('/api/delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ rowIndex: idx }),
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error);
+    await loadStudents();
+  } catch(e) {
+    alert('删除失败：' + e.message);
+  }
 }
 
 loadStudents();
