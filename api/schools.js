@@ -28,7 +28,7 @@ async function getSheetId(sheets, spreadsheetId, sheetName) {
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
@@ -36,18 +36,21 @@ export default async function handler(req, res) {
   const sheets = google.sheets({ version: 'v4', auth });
   const spreadsheetId = process.env.SHEET_ID;
 
+  // GET — 读取某学生的选校列表
   if (req.method === 'GET') {
     try {
       const { email } = req.query;
-      const resp = await sheets.spreadsheets.values.get({ spreadsheetId, range: 'schools!A:I' });
+      const resp = await sheets.spreadsheets.values.get({
+        spreadsheetId,
+        range: 'schools!A:I',
+      });
       const rows = resp.data.values || [];
       if (rows.length <= 1) return res.json({ success: true, schools: [] });
       const headers = rows[0];
       const data = rows.slice(1)
-        .map((row, i) => {
+        .map(row => {
           const obj = {};
           headers.forEach((h, j) => obj[h] = row[j] || '');
-          obj._rowIndex = i + 2;
           return obj;
         })
         .filter(r => !email || r['学生邮箱'] === email);
@@ -57,6 +60,7 @@ export default async function handler(req, res) {
     }
   }
 
+  // POST — 录入选校（先清空该学生旧记录，再写新记录）
   if (req.method === 'POST') {
     try {
       const { studentEmail, studentName, schools, operator } = req.body;
@@ -64,26 +68,51 @@ export default async function handler(req, res) {
         return res.status(400).json({ success: false, error: '缺少必要字段' });
       }
 
-      const existing = await sheets.spreadsheets.values.get({ spreadsheetId, range: 'schools!A:A' });
+      const sheetId = await getSheetId(sheets, spreadsheetId, 'schools');
+
+      // 读取现有数据，找出该学生所有行（倒序，从后往前删，避免行号偏移）
+      const existing = await sheets.spreadsheets.values.get({
+        spreadsheetId,
+        range: 'schools!A:A',
+      });
       const existRows = existing.data.values || [];
-      const deleteIndexes = existRows.map((r, i) => r[0] === studentEmail ? i + 1 : null).filter(Boolean).reverse();
-      for (const rowIdx of deleteIndexes) {
+      // 收集需要删除的行索引（0-indexed），跳过表头(index 0)，倒序排列
+      const toDelete = existRows
+        .map((r, i) => (i > 0 && r[0] === studentEmail) ? i : null)
+        .filter(i => i !== null)
+        .sort((a, b) => b - a); // 倒序，从最后一行开始删
+
+      // 逐行删除（倒序保证行号不偏移）
+      for (const rowIdx of toDelete) {
         await sheets.spreadsheets.batchUpdate({
           spreadsheetId,
           requestBody: {
             requests: [{
               deleteDimension: {
-                range: { sheetId: await getSheetId(sheets, spreadsheetId, 'schools'), dimension: 'ROWS', startIndex: rowIdx - 1, endIndex: rowIdx }
-              }
-            }]
-          }
+                range: {
+                  sheetId,
+                  dimension: 'ROWS',
+                  startIndex: rowIdx,
+                  endIndex: rowIdx + 1,
+                },
+              },
+            }],
+          },
         });
       }
 
+      // 写入新选校
       const ts = new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' });
       const rows = schools.map(s => [
-        studentEmail, studentName || '', s.school || '', s.schoolCN || '',
-        s.category || '', s.appType || '', '待确认', ts, operator || '顾问'
+        studentEmail,
+        studentName || '',
+        s.school || '',
+        s.schoolCN || '',
+        s.category || '',
+        s.appType || '',
+        '待确认',
+        ts,
+        operator || '顾问',
       ]);
       await sheets.spreadsheets.values.append({
         spreadsheetId,
@@ -92,12 +121,13 @@ export default async function handler(req, res) {
         requestBody: { values: rows },
       });
 
+      // 写日志
       await writeLog(sheets, spreadsheetId, {
         operator: operator || '顾问',
         operatorType: '顾问',
         studentEmail,
         action: '录入选校',
-        detail: schools.map(s => `${s.schoolCN}(${s.category}/${s.appType})`).join('，'),
+        detail: schools.map(s => `${s.schoolCN||s.school}(${s.category}/${s.appType})`).join('，'),
       });
 
       return res.json({ success: true });
