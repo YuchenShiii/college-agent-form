@@ -3,125 +3,127 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>M2 · 学生 Profile Dashboard</title>
+  <title>AdmitHere · 顾问后台</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #f0f4f9; --white: #ffffff; --border: #e2e8f0; --border2: #cbd5e1;
+      --bg: #f0f4f9; --white: #fff; --border: #e2e8f0; --border2: #cbd5e1;
       --text: #1a202c; --muted: #718096; --label: #4a5568;
       --blue: #1a6fe8; --blue-light: #ebf2ff; --blue-mid: #3b82f6; --blue-dark: #1251b5;
       --teal: #0694a2; --teal-light: #e6f6f8;
       --amber: #d97706; --amber-light: #fffbeb;
       --green: #059669; --green-light: #ecfdf5;
       --purple: #7c3aed; --purple-light: #f5f3ff;
+      --sidebar-w: 260px;
+      --topbar-h: 52px;
     }
-    body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-    .topbar { background: var(--blue-dark); padding: 0 40px; display: flex; align-items: center; height: 56px; position: sticky; top: 0; z-index: 30; box-shadow: 0 2px 8px rgba(18,81,181,0.3); }
-    .topbar-logo { font-size: 18px; font-weight: 800; color: #fff; margin-right: 32px; display: flex; align-items: center; gap: 8px; }
-    .topbar-logo span { color: rgba(255,255,255,0.6); font-weight: 400; font-size: 14px; }
-    .topbar-nav { display: flex; height: 100%; }
-    .nav-item { display: flex; align-items: center; padding: 0 18px; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.75); border-bottom: 3px solid transparent; cursor: pointer; text-decoration: none; height: 100%; transition: all 0.15s; }
-    .nav-item:hover { color: #fff; background: rgba(255,255,255,0.08); }
-    .nav-item.active { color: #fff; border-bottom-color: #fff; }
-    .topbar-right { margin-left: auto; display: flex; gap: 10px; align-items: center; }
-    .topbar-tag { font-size: 11px; padding: 3px 10px; border-radius: 4px; background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.9); }
-    .subheader { background: var(--white); border-bottom: 1px solid var(--border); padding: 16px 40px; display: flex; align-items: center; justify-content: space-between; }
-    .subheader-left h1 { font-size: 18px; font-weight: 700; }
-    .subheader-left p { font-size: 13px; color: var(--muted); margin-top: 2px; }
-    .subheader-right { display: flex; gap: 10px; align-items: center; }
-    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 16px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid transparent; text-decoration: none; }
-    .btn-primary { background: var(--blue); color: #fff; }
-    .btn-primary:hover { background: var(--blue-dark); }
-    .btn-ghost { background: #fff; color: var(--label); border-color: var(--border2); }
-    .btn-ghost:hover { background: var(--bg); }
-    .refresh-btn { font-size: 13px; color: var(--blue); background: none; border: none; cursor: pointer; padding: 4px 8px; border-radius: 4px; }
-    .refresh-btn:hover { background: var(--blue-light); }
-    .page { max-width: 1200px; margin: 0 auto; padding: 28px 32px 60px; }
-    .stats-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
-    .stat-card { background: var(--white); border-radius: 8px; border: 1px solid var(--border); padding: 18px 20px; display: flex; align-items: center; gap: 14px; }
-    .stat-icon { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
-    .stat-icon.blue { background: var(--blue-light); } .stat-icon.green { background: var(--green-light); }
-    .stat-icon.amber { background: var(--amber-light); } .stat-icon.teal { background: var(--teal-light); }
-    .stat-num { font-size: 24px; font-weight: 800; line-height: 1; }
-    .stat-label { font-size: 12px; color: var(--muted); margin-top: 3px; }
-    .state-box { text-align: center; padding: 60px 20px; color: var(--muted); }
-    .state-box .icon { font-size: 40px; margin-bottom: 12px; }
-    .state-box h3 { font-size: 16px; font-weight: 600; color: var(--label); margin-bottom: 6px; }
-    .state-box p { font-size: 13px; }
-    .spinner { display: inline-block; width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--blue); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 12px; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .student-card { background: var(--white); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); transition: box-shadow 0.2s, border-color 0.2s; }
-    .student-card:hover { box-shadow: 0 4px 16px rgba(26,111,232,0.1); border-color: #93b8f8; }
-    .card-header { padding: 20px 24px; background: linear-gradient(135deg, #f0f6ff 0%, #fafcff 100%); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 18px; }
-    .avatar { width: 52px; height: 52px; border-radius: 10px; flex-shrink: 0; background: linear-gradient(135deg, var(--blue), var(--blue-mid)); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; color: white; box-shadow: 0 2px 8px rgba(26,111,232,0.3); }
-    .header-info { flex: 1; }
-    .student-name { font-size: 20px; font-weight: 800; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-    .student-name-en { font-size: 14px; font-weight: 400; color: var(--muted); }
-    .student-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-    .meta-chip { font-size: 11px; font-weight: 500; padding: 2px 10px; border-radius: 4px; color: var(--label); background: rgba(0,0,0,0.04); border: 1px solid var(--border); }
-    .meta-chip.blue { background: var(--blue-light); color: var(--blue); border-color: #bdd5fb; }
-    .meta-chip.teal { background: var(--teal-light); color: var(--teal); border-color: #a7d8de; }
-    .meta-chip.purple { background: var(--purple-light); color: var(--purple); border-color: #c4b5fd; }
-    .header-badges { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
-    .strategy-tag { font-size: 11px; font-weight: 700; letter-spacing: 0.04em; padding: 4px 12px; border-radius: 4px; }
-    .tag-ed { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
-    .tag-safe { background: var(--green-light); color: #065f46; border: 1px solid #6ee7b7; }
-    .tag-enroll { font-size: 11px; color: var(--muted); text-align: right; }
-    .card-section { padding: 18px 24px; border-bottom: 1px solid var(--border); }
-    .card-section:last-child { border-bottom: none; }
-    .section-label { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--blue); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-    .scores-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
-    .score-box { border: 1px solid var(--border); border-radius: 8px; padding: 12px 10px; text-align: center; background: #fafbfc; }
-    .score-lbl { font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
-    .score-val { font-size: 22px; font-weight: 800; line-height: 1; }
-    .score-sub { font-size: 10px; color: var(--muted); margin-top: 3px; }
-    .score-bar { height: 3px; border-radius: 99px; background: var(--border); margin-top: 8px; overflow: hidden; }
-    .score-bar-fill { height: 100%; border-radius: 99px; }
-    .c-blue{color:var(--blue)} .bg-blue{background:var(--blue)}
-    .c-teal{color:var(--teal)} .bg-teal{background:var(--teal)}
-    .c-amber{color:var(--amber)} .bg-amber{background:var(--amber)}
-    .c-green{color:var(--green)} .bg-green{background:var(--green)}
-    .ap-grid { display: flex; flex-wrap: wrap; gap: 8px; }
-    .ap-chip { display: flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 6px; background: #f8fafc; border: 1px solid var(--border); font-size: 12px; color: var(--label); }
-    .ap-score { font-size: 12px; font-weight: 800; width: 20px; height: 20px; border-radius: 4px; display: flex; align-items: center; justify-content: center; }
-    .ap-5{background:var(--green-light);color:var(--green)} .ap-4{background:var(--blue-light);color:var(--blue)} .ap-3{background:var(--amber-light);color:var(--amber)}
-    .act-row { display: flex; align-items: flex-start; gap: 12px; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border); margin-bottom: 8px; background: #fafbfc; }
-    .act-row:last-child { margin-bottom: 0; }
-    .act-num { width: 24px; height: 24px; border-radius: 50%; background: var(--blue-light); color: var(--blue); font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+    .topbar { height: var(--topbar-h); background: var(--blue-dark); display: flex; align-items: center; padding: 0 20px; gap: 16px; flex-shrink: 0; box-shadow: 0 2px 6px rgba(18,81,181,0.35); z-index: 50; }
+    .topbar-logo { font-size: 16px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 6px; }
+    .topbar-logo span { font-weight: 400; font-size: 13px; color: rgba(255,255,255,0.55); }
+    .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+    .topbar-tag { font-size: 11px; padding: 2px 9px; border-radius: 4px; background: rgba(255,255,255,0.14); color: rgba(255,255,255,0.88); }
+    .refresh-btn { font-size: 12px; color: rgba(255,255,255,0.75); background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 5px; padding: 4px 12px; cursor: pointer; }
+    .refresh-btn:hover { background: rgba(255,255,255,0.18); color: #fff; }
+    .layout { display: flex; flex: 1; overflow: hidden; }
+    .sidebar { width: var(--sidebar-w); background: var(--white); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; }
+    .sidebar-header { padding: 14px 16px 10px; border-bottom: 1px solid var(--border); }
+    .sidebar-title { font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
+    .sidebar-count { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .sidebar-search { margin: 10px 12px 0; position: relative; }
+    .sidebar-search input { width: 100%; padding: 6px 10px 6px 28px; border: 1px solid var(--border); border-radius: 6px; font-size: 12px; color: var(--text); background: var(--bg); outline: none; }
+    .sidebar-search input:focus { border-color: var(--blue); background: #fff; }
+    .sidebar-search::before { content: '🔍'; position: absolute; left: 8px; top: 50%; transform: translateY(-50%); font-size: 11px; }
+    .student-list { flex: 1; overflow-y: auto; padding: 8px 0; }
+    .student-list-item { padding: 10px 16px; cursor: pointer; border-left: 3px solid transparent; transition: all 0.1s; }
+    .student-list-item:hover { background: var(--bg); }
+    .student-list-item.active { background: var(--blue-light); border-left-color: var(--blue); }
+    .sli-name { font-size: 13px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 6px; }
+    .sli-name-en { font-size: 11px; font-weight: 400; color: var(--muted); }
+    .sli-meta { font-size: 11px; color: var(--muted); margin-top: 3px; }
+    .sli-tags { display: flex; gap: 4px; margin-top: 5px; flex-wrap: wrap; }
+    .sli-tag { font-size: 10px; padding: 1px 7px; border-radius: 3px; }
+    .sli-tag.blue { background: var(--blue-light); color: var(--blue); }
+    .sli-tag.green { background: var(--green-light); color: var(--green); }
+    .sli-tag.amber { background: var(--amber-light); color: var(--amber); }
+    .sidebar-loading { padding: 30px 16px; text-align: center; color: var(--muted); font-size: 13px; }
+    .mini-spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--blue); border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px; }
+    .detail { flex: 1; overflow-y: auto; background: var(--bg); }
+    .detail-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--muted); gap: 10px; }
+    .detail-empty .icon { font-size: 48px; }
+    .detail-empty h3 { font-size: 16px; font-weight: 600; color: var(--label); }
+    .detail-empty p { font-size: 13px; }
+    .detail-inner { max-width: 900px; margin: 0 auto; padding: 24px 28px 60px; }
+    .profile-header { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 22px 24px; margin-bottom: 16px; display: flex; align-items: center; gap: 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+    .profile-avatar { width: 56px; height: 56px; border-radius: 12px; flex-shrink: 0; background: linear-gradient(135deg, var(--blue), var(--blue-mid)); display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 800; color: #fff; box-shadow: 0 2px 8px rgba(26,111,232,0.3); }
+    .profile-info { flex: 1; }
+    .profile-name { font-size: 22px; font-weight: 800; display: flex; align-items: baseline; gap: 10px; }
+    .profile-name-en { font-size: 14px; font-weight: 400; color: var(--muted); }
+    .profile-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .chip { font-size: 11px; font-weight: 500; padding: 2px 10px; border-radius: 4px; border: 1px solid var(--border); color: var(--label); background: rgba(0,0,0,0.03); }
+    .chip.blue { background: var(--blue-light); color: var(--blue); border-color: #bdd5fb; }
+    .chip.teal { background: var(--teal-light); color: var(--teal); border-color: #a7d8de; }
+    .chip.purple { background: var(--purple-light); color: var(--purple); border-color: #c4b5fd; }
+    .profile-badges { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
+    .badge { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 4px; }
+    .badge-ed { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+    .badge-safe { background: var(--green-light); color: #065f46; border: 1px solid #6ee7b7; }
+    .badge-enroll { font-size: 11px; color: var(--muted); }
+    .card { background: var(--white); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 14px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+    .card-sec { padding: 16px 20px; border-bottom: 1px solid var(--border); }
+    .card-sec:last-child { border-bottom: none; }
+    .sec-label { font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--blue); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .scores-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+    .score-box { border: 1px solid var(--border); border-radius: 8px; padding: 11px 10px; text-align: center; background: #fafbfc; }
+    .score-lbl { font-size: 9px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+    .score-val { font-size: 20px; font-weight: 800; line-height: 1; }
+    .score-sub { font-size: 10px; color: var(--muted); margin-top: 2px; }
+    .score-bar { height: 3px; border-radius: 99px; background: var(--border); margin-top: 7px; overflow: hidden; }
+    .score-fill { height: 100%; border-radius: 99px; }
+    .c-blue{color:var(--blue)} .f-blue{background:var(--blue)}
+    .c-teal{color:var(--teal)} .f-teal{background:var(--teal)}
+    .c-amber{color:var(--amber)} .f-amber{background:var(--amber)}
+    .c-green{color:var(--green)} .f-green{background:var(--green)}
+    .ap-wrap { display: flex; flex-wrap: wrap; gap: 7px; }
+    .ap-chip { display: flex; align-items: center; gap: 7px; padding: 5px 11px; border-radius: 6px; background: #f8fafc; border: 1px solid var(--border); font-size: 12px; color: var(--label); }
+    .ap-badge { font-size: 11px; font-weight: 800; width: 20px; height: 20px; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .ap-5{background:var(--green-light);color:var(--green)} .ap-4{background:var(--blue-light);color:var(--blue)} .ap-3{background:var(--amber-light);color:var(--amber)} .ap-x{background:var(--bg);color:var(--muted)}
+    .act-item { display: flex; gap: 11px; padding: 9px 11px; border-radius: 6px; border: 1px solid var(--border); background: #fafbfc; margin-bottom: 7px; }
+    .act-item:last-child { margin-bottom: 0; }
+    .act-num { width: 22px; height: 22px; border-radius: 50%; background: var(--blue-light); color: var(--blue); font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
     .act-body { flex: 1; }
-    .act-role { font-size: 10px; font-weight: 600; color: var(--blue); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 2px; }
-    .act-title { font-size: 13px; font-weight: 600; }
+    .act-type { font-size: 9px; font-weight: 700; color: var(--blue); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1px; }
+    .act-name { font-size: 13px; font-weight: 600; }
     .act-desc { font-size: 11px; color: var(--muted); margin-top: 2px; line-height: 1.5; }
-    .act-meta { display: flex; gap: 8px; margin-top: 4px; }
-    .act-tag { font-size: 10px; padding: 2px 8px; border-radius: 3px; background: var(--bg); color: var(--muted); border: 1px solid var(--border); }
-    .honors-grid { display: flex; flex-wrap: wrap; gap: 8px; }
-    .honor-chip { display: flex; align-items: center; gap: 8px; padding: 7px 14px; border-radius: 6px; background: var(--amber-light); border: 1px solid #fcd34d; }
-    .honor-name { font-size: 12px; font-weight: 600; color: var(--text); }
-    .honor-level { font-size: 10px; color: var(--amber); }
-    .intent-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .intent-box { background: #fafbfc; border-radius: 8px; padding: 12px 14px; border: 1px solid var(--border); }
-    .intent-box-lbl { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
-    .intent-tags { display: flex; flex-wrap: wrap; gap: 5px; }
-    .intent-tag { font-size: 12px; padding: 3px 10px; border-radius: 4px; background: var(--blue-light); color: var(--blue); border: 1px solid #bdd5fb; }
-    .intent-tag.teal{background:var(--teal-light);color:var(--teal);border-color:#a7d8de}
-    .intent-tag.amber{background:var(--amber-light);color:var(--amber);border-color:#fcd34d}
-    .intent-tag.gray{background:var(--bg);color:var(--muted);border-color:var(--border)}
-    .essay-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .essay-card { background: #fafbfc; border-radius: 8px; padding: 12px 14px; border: 1px solid var(--border); }
-    .essay-q { font-size: 11px; font-weight: 600; color: var(--label); margin-bottom: 5px; }
+    .act-foot { display: flex; gap: 6px; margin-top: 4px; }
+    .act-ft { font-size: 10px; padding: 1px 7px; border-radius: 3px; background: var(--bg); color: var(--muted); border: 1px solid var(--border); }
+    .honors-wrap { display: flex; flex-wrap: wrap; gap: 7px; }
+    .honor-chip { display: flex; align-items: center; gap: 7px; padding: 6px 12px; border-radius: 6px; background: var(--amber-light); border: 1px solid #fcd34d; }
+    .honor-name { font-size: 12px; font-weight: 600; }
+    .honor-sub { font-size: 10px; color: var(--amber); }
+    .intent-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+    .intent-box { background: #fafbfc; border-radius: 7px; padding: 11px 13px; border: 1px solid var(--border); }
+    .intent-lbl { font-size: 9px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); margin-bottom: 7px; }
+    .intent-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+    .itag { font-size: 11px; padding: 2px 9px; border-radius: 4px; background: var(--blue-light); color: var(--blue); border: 1px solid #bdd5fb; }
+    .itag.teal{background:var(--teal-light);color:var(--teal);border-color:#a7d8de}
+    .itag.amber{background:var(--amber-light);color:var(--amber);border-color:#fcd34d}
+    .itag.gray{background:var(--bg);color:var(--muted);border-color:var(--border)}
+    .essay-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+    .essay-box { background: #fafbfc; border-radius: 7px; padding: 11px 13px; border: 1px solid var(--border); }
+    .essay-q { font-size: 10px; font-weight: 600; color: var(--label); margin-bottom: 5px; }
     .essay-a { font-size: 12px; color: var(--text); line-height: 1.6; }
     .essay-a.empty { color: var(--muted); font-style: italic; }
-    .info-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-    .info-key { font-size: 10px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
+    .info-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .info-key { font-size: 9px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
     .info-val { font-size: 13px; }
-    .warn-banner { font-size: 11px; color: #92400e; padding: 8px 12px; border-radius: 6px; background: #fffbeb; border: 1px solid #fcd34d; }
-    .note-box { margin-top:12px; padding:10px 14px; border-radius:6px; background:#f0f6ff; border:1px solid #bdd5fb; font-size:12px; color:var(--label); }
-    @media (max-width: 900px) {
-      .topbar{padding:0 16px} .subheader{padding:14px 16px;flex-direction:column;gap:10px;align-items:flex-start}
-      .page{padding:16px 16px 40px} .stats-bar{grid-template-columns:repeat(2,1fr)}
-      .scores-row{grid-template-columns:repeat(3,1fr)} .intent-grid,.essay-grid{grid-template-columns:1fr}
-      .info-grid{grid-template-columns:repeat(2,1fr)} .card-header{flex-wrap:wrap}
+    .warn { font-size: 11px; color: #92400e; padding: 8px 11px; border-radius: 6px; background: #fffbeb; border: 1px solid #fcd34d; }
+    .note-box { padding: 9px 13px; border-radius: 6px; background: var(--blue-light); border: 1px solid #bdd5fb; font-size: 12px; color: var(--label); margin-top: 10px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (max-width: 700px) {
+      .sidebar{width:200px} .scores-grid{grid-template-columns:repeat(3,1fr)}
+      .intent-grid,.essay-grid{grid-template-columns:1fr} .info-grid{grid-template-columns:repeat(2,1fr)}
     }
   </style>
 </head>
@@ -129,258 +131,169 @@
 
 <div class="topbar">
   <div class="topbar-logo">🎓 AdmitHere <span>顾问后台</span></div>
-  <nav class="topbar-nav">
-    <a class="nav-item active" href="#">学生档案</a>
-    <a class="nav-item" href="#">定校建议</a>
-    <a class="nav-item" href="#">文书追踪</a>
-    <a class="nav-item" href="#">数据统计</a>
-  </nav>
   <div class="topbar-right">
-    <span class="topbar-tag" id="year-tag">加载中...</span>
+    <span class="topbar-tag" id="tag-count">加载中...</span>
     <span class="topbar-tag">内部系统</span>
-  </div>
-</div>
-
-<div class="subheader">
-  <div class="subheader-left">
-    <h1>学生档案 · M2 Profile</h1>
-    <p id="sub-desc">正在从 Google Sheet 加载数据...</p>
-  </div>
-  <div class="subheader-right">
     <button class="refresh-btn" onclick="loadStudents()">↻ 刷新</button>
-    <a class="btn btn-ghost" href="/">← 返回表单</a>
-    <a class="btn btn-primary" href="/">+ 新增学生</a>
   </div>
 </div>
 
-<div class="page">
-  <div class="stats-bar">
-    <div class="stat-card"><div class="stat-icon blue">👥</div><div><div class="stat-num" id="stat-total">-</div><div class="stat-label">在库学生</div></div></div>
-    <div class="stat-card"><div class="stat-icon green">✅</div><div><div class="stat-num" id="stat-complete">-</div><div class="stat-label">资料完整</div></div></div>
-    <div class="stat-card"><div class="stat-icon amber">📝</div><div><div class="stat-num" id="stat-pending">-</div><div class="stat-label">待补充活动</div></div></div>
-    <div class="stat-card"><div class="stat-icon teal">🎯</div><div><div class="stat-num" id="stat-year">-</div><div class="stat-label">最近届次</div></div></div>
+<div class="layout">
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-title">学生列表</div>
+      <div class="sidebar-count" id="sidebar-count">加载中...</div>
+    </div>
+    <div class="sidebar-search">
+      <input type="text" id="search-input" placeholder="搜索姓名..." oninput="filterList()" />
+    </div>
+    <div class="student-list" id="student-list">
+      <div class="sidebar-loading"><span class="mini-spinner"></span>加载中...</div>
+    </div>
   </div>
-  <div id="students-container">
-    <div class="state-box">
-      <div class="spinner"></div>
-      <h3>正在加载学生数据...</h3>
-      <p>从 Google Sheet 获取最新信息</p>
+
+  <div class="detail" id="detail">
+    <div class="detail-empty">
+      <div class="icon">👈</div>
+      <h3>选择一名学生</h3>
+      <p>从左侧列表点击查看详细档案</p>
     </div>
   </div>
 </div>
 
 <script>
-const v = (s) => (s || '').trim();
-
-function scoreBar(val, max, cls) {
-  const pct = max > 0 ? Math.round((val / max) * 100) : 0;
-  return `<div class="score-bar"><div class="score-bar-fill ${cls}" style="width:${Math.min(pct,100)}%"></div></div>`;
-}
-
-function apCls(score) {
-  const n = parseInt(score);
-  return n >= 5 ? 'ap-5' : n >= 4 ? 'ap-4' : 'ap-3';
-}
-
-function renderStudent(s) {
-  const nameCN = v(s['中文姓名']) || '未填写';
-  const nameEN = v(s['英文姓名']);
-  const grade = v(s['年级']);
-  const gradYear = v(s['毕业年份']);
-  const school = v(s['高中名称']);
-  const schoolType = v(s['高中类型']);
-  const city = v(s['高中城市']);
-  const major1 = v(s['意向专业1']);
-  const major2 = v(s['意向专业2']);
-  const major3 = v(s['意向专业3']);
-  const gender = v(s['性别']);
-  const dob = v(s['出生日期']);
-  const gpa = v(s['GPA']);
-  const gpaScale = v(s['GPA满分制']) || '4.0';
-  const sat = v(s['SAT总分']);
-  const satMath = v(s['SAT数学']);
-  const satEbrw = v(s['SAT EBRW']);
-  const satRetake = v(s['是否再考SAT']);
-  const act = v(s['ACT总分']);
-  const toefl = v(s['托福总分']);
-  const ielts = v(s['雅思']);
-  const enrollTerm = v(s['入学学期']);
-  const appRound = v(s['申请轮次']);
-  const region = v(s['地区偏好']);
-  const schoolSize = v(s['学校规模']);
-  const budget = v(s['年费预算']);
-  const aidNeeded = v(s['财援需求']);
-  const tendency = v(s['录取倾向']);
-  const targetSchools = v(s['意向学校']);
-  const appNotes = v(s['申请备注']);
-  const wechat = v(s['微信号']);
-  const phone = v(s['手机号']);
-  const email = v(s['邮箱']);
-  const nationality = v(s['国籍']);
-  const timestamp = v(s['时间戳']);
-  const proudest = v(s['最骄傲的事']);
-  const lifeEvent = v(s['改变你的经历']);
-  const whyMajor = v(s['为什么选这个专业']);
-  const unique = v(s['与众不同之处']);
-
-  const aps = [];
-  for (let i = 1; i <= 8; i++) {
-    const n = v(s[`AP${i}课程`]), sc = v(s[`AP${i}分数`]);
-    if (n) aps.push({n, sc});
-  }
-  const acts = [];
-  for (let i = 1; i <= 10; i++) {
-    const type = v(s[`活动${i}类别`]), role = v(s[`活动${i}职位`]);
-    const name = v(s[`活动${i}名称`]), desc = v(s[`活动${i}描述`]);
-    const hrs = v(s[`活动${i}每周时长`]), period = v(s[`活动${i}时间段`]);
-    if (name || type) acts.push({type, role, name, desc, hrs, period});
-  }
-  const honors = [];
-  for (let i = 1; i <= 5; i++) {
-    const name = v(s[`奖项${i}名称`]), level = v(s[`奖项${i}级别`]), gr = v(s[`奖项${i}年级`]);
-    if (name) honors.push({name, level, gr});
-  }
-
-  let html = `<div class="student-card">
-  <div class="card-header">
-    <div class="avatar">${nameCN.charAt(0)}</div>
-    <div class="header-info">
-      <div class="student-name">${nameCN}${nameEN ? ` <span class="student-name-en">${nameEN}</span>` : ''}</div>
-      <div class="student-meta">
-        ${grade ? `<span class="meta-chip blue">${grade}${gradYear ? ' · ' + gradYear + '届' : ''}</span>` : ''}
-        ${school ? `<span class="meta-chip teal">${school}</span>` : ''}
-        ${schoolType||city ? `<span class="meta-chip">${[schoolType,city].filter(Boolean).join(' · ')}</span>` : ''}
-        ${major1 ? `<span class="meta-chip purple">${major1} 志向</span>` : ''}
-        ${gender||dob ? `<span class="meta-chip">${[gender,dob].filter(Boolean).join(' · ')}</span>` : ''}
-      </div>
-    </div>
-    <div class="header-badges">
-      ${appRound ? `<span class="strategy-tag tag-ed">${appRound}</span>` : ''}
-      ${tendency ? `<span class="strategy-tag tag-safe">${tendency}</span>` : ''}
-      ${enrollTerm ? `<div class="tag-enroll">📅 ${enrollTerm} 入学</div>` : ''}
-    </div>
-  </div>
-  <div>`;
-
-  // 成绩
-  let scoreBoxes = '';
-  if (gpa) scoreBoxes += `<div class="score-box"><div class="score-lbl">GPA</div><div class="score-val c-blue">${gpa}</div><div class="score-sub">/ ${gpaScale}</div>${scoreBar(parseFloat(gpa),parseFloat(gpaScale)||4,'bg-blue')}</div>`;
-  if (sat) scoreBoxes += `<div class="score-box"><div class="score-lbl">SAT</div><div class="score-val c-teal">${sat}</div><div class="score-sub">${satMath?'数'+satMath:''} ${satEbrw?'文'+satEbrw:''}</div>${scoreBar(parseInt(sat),1600,'bg-teal')}</div>`;
-  if (act) scoreBoxes += `<div class="score-box"><div class="score-lbl">ACT</div><div class="score-val c-teal">${act}</div><div class="score-sub">/ 36</div>${scoreBar(parseInt(act),36,'bg-teal')}</div>`;
-  if (toefl) scoreBoxes += `<div class="score-box"><div class="score-lbl">托福</div><div class="score-val c-amber">${toefl}</div><div class="score-sub">/ 120</div>${scoreBar(parseInt(toefl),120,'bg-amber')}</div>`;
-  if (ielts) scoreBoxes += `<div class="score-box"><div class="score-lbl">雅思</div><div class="score-val c-amber">${ielts}</div><div class="score-sub">/ 9.0</div>${scoreBar(parseFloat(ielts),9,'bg-amber')}</div>`;
-  if (aps.length) {
-    const avg = aps.filter(a=>a.sc).length ? (aps.reduce((s,a)=>s+parseInt(a.sc||0),0)/aps.filter(a=>a.sc).length).toFixed(1) : '-';
-    scoreBoxes += `<div class="score-box"><div class="score-lbl">AP 课程</div><div class="score-val c-green">${aps.length} 门</div><div class="score-sub">均分 ${avg}</div>${scoreBar(aps.length,8,'bg-green')}</div>`;
-  }
-  if (satRetake) scoreBoxes += `<div class="score-box"><div class="score-lbl">SAT 再考</div><div class="score-val c-amber" style="font-size:14px;padding-top:6px">${satRetake}</div><div class="score-sub">计划</div></div>`;
-  if (scoreBoxes) html += `<div class="card-section"><div class="section-label">成绩概览</div><div class="scores-row">${scoreBoxes}</div></div>`;
-
-  // AP
-  if (aps.length) {
-    html += `<div class="card-section"><div class="section-label">AP 成绩</div><div class="ap-grid">`;
-    aps.forEach(a => { html += `<div class="ap-chip">${a.n}${a.sc ? ` <span class="ap-score ${apCls(a.sc)}">${a.sc}</span>` : ''}</div>`; });
-    html += `</div></div>`;
-  }
-
-  // 活动
-  html += `<div class="card-section"><div class="section-label">课外活动</div>`;
-  if (acts.length) {
-    acts.forEach((a, i) => {
-      html += `<div class="act-row"><div class="act-num">${i+1}</div><div class="act-body">
-        ${a.type||a.role ? `<div class="act-role">${[a.type,a.role].filter(Boolean).join(' · ')}</div>` : ''}
-        <div class="act-title">${a.name||'未填写名称'}</div>
-        ${a.desc ? `<div class="act-desc">${a.desc}</div>` : ''}
-        ${a.hrs||a.period ? `<div class="act-meta">${a.hrs?`<span class="act-tag">⏱ ${a.hrs}h/周</span>`:''}${a.period?`<span class="act-tag">📅 ${a.period}</span>`:''}</div>` : ''}
-      </div></div>`;
-    });
-  } else {
-    html += `<div class="warn-banner">⚠️ 活动信息待补充 — 请在信息收集表中完善活动 1–10 的详细内容</div>`;
-  }
-  html += `</div>`;
-
-  // 奖项
-  if (honors.length) {
-    html += `<div class="card-section"><div class="section-label">荣誉奖项</div><div class="honors-grid">`;
-    honors.forEach(h => { html += `<div class="honor-chip"><span>🏆</span><div><div class="honor-name">${h.name}</div>${h.level||h.gr?`<div class="honor-level">${[h.level,h.gr].filter(Boolean).join(' · ')}</div>`:''}</div></div>`; });
-    html += `</div></div>`;
-  }
-
-  // 申请意向
-  html += `<div class="card-section"><div class="section-label">申请意向 & 偏好</div><div class="intent-grid">
-    <div class="intent-box"><div class="intent-box-lbl">意向专业</div><div class="intent-tags">
-      ${major1?`<span class="intent-tag">${major1}</span>`:''}
-      ${major2?`<span class="intent-tag">${major2}</span>`:''}
-      ${major3?`<span class="intent-tag">${major3}</span>`:''}
-      ${!major1&&!major2&&!major3?'<span class="intent-tag gray">待填写</span>':''}
-    </div></div>
-    <div class="intent-box"><div class="intent-box-lbl">申请策略</div><div class="intent-tags">
-      ${appRound?`<span class="intent-tag amber">${appRound}</span>`:''}
-      ${tendency?`<span class="intent-tag teal">${tendency}</span>`:''}
-      ${enrollTerm?`<span class="intent-tag">${enrollTerm}</span>`:''}
-    </div></div>
-    <div class="intent-box"><div class="intent-box-lbl">地区 & 规模</div><div class="intent-tags">
-      <span class="intent-tag gray">${region||'地区不限'}</span>
-      <span class="intent-tag gray">${schoolSize||'规模不限'}</span>
-    </div></div>
-    <div class="intent-box"><div class="intent-box-lbl">经济 & 财援</div><div class="intent-tags">
-      <span class="intent-tag gray">${budget||'预算待定'}</span>
-      <span class="intent-tag gray">${aidNeeded||'财援待定'}</span>
-    </div></div>
-  </div>
-  ${targetSchools?`<div style="margin-top:10px;padding:10px 14px;border-radius:6px;background:var(--blue-light);border:1px solid #bdd5fb;font-size:12px;color:var(--label)">🎯 意向学校：${targetSchools}</div>`:''}
-  </div>`;
-
-  // 文书
-  html += `<div class="card-section"><div class="section-label">文书素材（自述）</div><div class="essay-grid">
-    <div class="essay-card"><div class="essay-q">❓ 最骄傲的事</div><div class="essay-a${proudest?'':' empty'}">${proudest||'待填写'}</div></div>
-    <div class="essay-card"><div class="essay-q">🔄 改变你的经历</div><div class="essay-a${lifeEvent?'':' empty'}">${lifeEvent||'待填写'}</div></div>
-    <div class="essay-card"><div class="essay-q">🎯 为什么选这个专业</div><div class="essay-a${whyMajor?'':' empty'}">${whyMajor||'待填写'}</div></div>
-    <div class="essay-card"><div class="essay-q">✨ 与众不同之处</div><div class="essay-a${unique?'':' empty'}">${unique||'待填写'}</div></div>
-  </div></div>`;
-
-  // 联系
-  html += `<div class="card-section"><div class="section-label">联系信息</div>
-  <div class="info-grid">
-    ${wechat?`<div><div class="info-key">微信</div><div class="info-val">${wechat}</div></div>`:''}
-    ${phone?`<div><div class="info-key">手机</div><div class="info-val">${phone}</div></div>`:''}
-    ${email?`<div><div class="info-key">邮箱</div><div class="info-val">${email}</div></div>`:''}
-    ${nationality?`<div><div class="info-key">国籍</div><div class="info-val">${nationality}</div></div>`:''}
-  </div>
-  ${appNotes?`<div class="note-box">📝 申请备注：${appNotes}</div>`:''}
-  <div style="margin-top:8px;font-size:11px;color:var(--muted)">填表时间：${timestamp}</div>
-  </div>`;
-
-  html += `</div></div>`;
-  return html;
-}
+let allStudents = [];
+const v = s => (s || '').trim();
 
 async function loadStudents() {
-  const container = document.getElementById('students-container');
-  container.innerHTML = `<div class="state-box"><div class="spinner"></div><h3>正在加载...</h3><p>从 Google Sheet 获取最新数据</p></div>`;
+  document.getElementById('student-list').innerHTML = '<div class="sidebar-loading"><span class="mini-spinner"></span>加载中...</div>';
+  document.getElementById('detail').innerHTML = '<div class="detail-empty"><div class="icon">⏳</div><h3>正在加载...</h3></div>';
   try {
     const res = await fetch('/api/students');
     const data = await res.json();
-    if (!data.success) throw new Error(data.error || '加载失败');
-    const students = data.students;
-    document.getElementById('stat-total').textContent = students.length;
-    const hasActs = students.filter(s => v(s['活动1名称'])).length;
-    document.getElementById('stat-complete').textContent = hasActs;
-    document.getElementById('stat-pending').textContent = students.length - hasActs;
-    const years = students.map(s => v(s['毕业年份'])).filter(Boolean).map(Number);
-    const maxYear = years.length ? Math.max(...years) : null;
-    document.getElementById('stat-year').textContent = maxYear || '-';
-    document.getElementById('year-tag').textContent = maxYear ? maxYear + ' 届' : '未知届';
-    const now = new Date().toLocaleString('zh-CN', {timeZone:'Asia/Shanghai'});
-    document.getElementById('sub-desc').textContent = `共 ${students.length} 名学生 · 数据来源：admithere.com · 刷新于 ${now}`;
-    if (!students.length) {
-      container.innerHTML = `<div class="state-box"><div class="icon">📭</div><h3>暂无学生数据</h3><p>请先通过信息收集表添加学生</p></div>`;
-      return;
-    }
-    container.innerHTML = students.map(renderStudent).join('');
-  } catch(err) {
-    container.innerHTML = `<div class="state-box"><div class="icon">⚠️</div><h3>加载失败</h3><p>${err.message}</p><button class="btn btn-primary" style="margin-top:16px" onclick="loadStudents()">重试</button></div>`;
+    if (!data.success) throw new Error(data.error);
+    allStudents = data.students;
+    document.getElementById('tag-count').textContent = allStudents.length + ' 名学生';
+    document.getElementById('sidebar-count').textContent = '共 ' + allStudents.length + ' 名';
+    renderList(allStudents);
+    document.getElementById('detail').innerHTML = '<div class="detail-empty"><div class="icon">👈</div><h3>选择一名学生</h3><p>从左侧列表点击查看详细档案</p></div>';
+  } catch(e) {
+    document.getElementById('student-list').innerHTML = '<div class="sidebar-loading" style="color:#dc2626">加载失败<br><small>' + e.message + '</small></div>';
   }
+}
+
+function renderList(students) {
+  const list = document.getElementById('student-list');
+  if (!students.length) { list.innerHTML = '<div class="sidebar-loading">暂无匹配学生</div>'; return; }
+  list.innerHTML = students.map(s => {
+    const idx = allStudents.indexOf(s);
+    const nameCN = v(s['中文姓名']) || '未填写';
+    const nameEN = v(s['英文姓名']);
+    const grade = v(s['年级']), school = v(s['高中名称']);
+    const sat = v(s['SAT总分']), gpa = v(s['GPA']), major = v(s['意向专业1']);
+    return '<div class="student-list-item" id="sli-'+idx+'" onclick="selectStudent('+idx+')">' +
+      '<div class="sli-name">' + nameCN + (nameEN ? ' <span class="sli-name-en">'+nameEN+'</span>' : '') + '</div>' +
+      '<div class="sli-meta">' + [school, grade ? grade+'年级' : ''].filter(Boolean).join(' · ') + '</div>' +
+      '<div class="sli-tags">' +
+        (gpa ? '<span class="sli-tag blue">GPA '+gpa+'</span>' : '') +
+        (sat ? '<span class="sli-tag green">SAT '+sat+'</span>' : '') +
+        (major ? '<span class="sli-tag amber">'+major+'</span>' : '') +
+      '</div></div>';
+  }).join('');
+}
+
+function filterList() {
+  const q = document.getElementById('search-input').value.trim().toLowerCase();
+  if (!q) { renderList(allStudents); return; }
+  renderList(allStudents.filter(s =>
+    v(s['中文姓名']).toLowerCase().includes(q) || v(s['英文姓名']).toLowerCase().includes(q)
+  ));
+}
+
+function selectStudent(idx) {
+  document.querySelectorAll('.student-list-item').forEach(el => el.classList.remove('active'));
+  const el = document.getElementById('sli-'+idx);
+  if (el) el.classList.add('active');
+  renderDetail(allStudents[idx]);
+}
+
+function renderDetail(s) {
+  const nameCN = v(s['中文姓名'])||'未填写', nameEN = v(s['英文姓名']);
+  const grade = v(s['年级']), gradYear = v(s['毕业年份']);
+  const school = v(s['高中名称']), schoolType = v(s['高中类型']), city = v(s['高中城市']);
+  const major1 = v(s['意向专业1']), major2 = v(s['意向专业2']), major3 = v(s['意向专业3']);
+  const gender = v(s['性别']), dob = v(s['出生日期']), nationality = v(s['国籍']);
+  const gpa = v(s['GPA']), gpaScale = v(s['GPA满分制'])||'4.0';
+  const sat = v(s['SAT总分']), satMath = v(s['SAT数学']), satEbrw = v(s['SAT EBRW']), satRetake = v(s['是否再考SAT']);
+  const act = v(s['ACT总分']), toefl = v(s['托福总分']), toeflSub = v(s['托福各项']), ielts = v(s['雅思']);
+  const appRound = v(s['申请轮次']), tendency = v(s['录取倾向']), enrollTerm = v(s['入学学期']);
+  const region = v(s['地区偏好']), schoolSize = v(s['学校规模']), budget = v(s['年费预算']), aidNeeded = v(s['财援需求']);
+  const targetSchools = v(s['意向学校']), appNotes = v(s['申请备注']);
+  const wechat = v(s['微信号']), phone = v(s['手机号']), email = v(s['邮箱']);
+  const proudest = v(s['最骄傲的事']), lifeEvent = v(s['改变你的经历']), whyMajor = v(s['为什么选这个专业']), unique = v(s['与众不同之处']);
+  const timestamp = v(s['时间戳']);
+
+  const aps = [];
+  for (let i=1;i<=8;i++){const n=v(s['AP'+i+'课程']),sc=v(s['AP'+i+'分数']);if(n)aps.push({n,sc});}
+  const acts = [];
+  for (let i=1;i<=10;i++){const type=v(s['活动'+i+'类别']),role=v(s['活动'+i+'职位']),name=v(s['活动'+i+'名称']),desc=v(s['活动'+i+'描述']),hrs=v(s['活动'+i+'每周时长']),period=v(s['活动'+i+'时间段']);if(name||type)acts.push({type,role,name,desc,hrs,period});}
+  const honors = [];
+  for (let i=1;i<=5;i++){const n=v(s['奖项'+i+'名称']),lv=v(s['奖项'+i+'级别']),gr=v(s['奖项'+i+'年级']);if(n)honors.push({n,lv,gr});}
+
+  function bar(val,max,cls){return '<div class="score-bar"><div class="score-fill '+cls+'" style="width:'+Math.min(Math.round(val/max*100),100)+'%"></div></div>';}
+  function apCls(sc){const n=parseInt(sc);return n>=5?'ap-5':n>=4?'ap-4':n>=3?'ap-3':'ap-x';}
+
+  let h = '<div class="detail-inner">';
+
+  // Header
+  h += '<div class="profile-header"><div class="profile-avatar">'+nameCN.charAt(0)+'</div><div class="profile-info"><div class="profile-name">'+nameCN+(nameEN?' <span class="profile-name-en">'+nameEN+'</span>':'')+'</div><div class="profile-chips">';
+  if(grade||gradYear) h+='<span class="chip blue">'+(grade||'')+(gradYear?' · '+gradYear+'届':'')+'</span>';
+  if(school) h+='<span class="chip teal">'+school+'</span>';
+  if(schoolType||city) h+='<span class="chip">'+[schoolType,city].filter(Boolean).join(' · ')+'</span>';
+  if(major1) h+='<span class="chip purple">'+major1+' 志向</span>';
+  if(gender||dob) h+='<span class="chip">'+[gender,dob].filter(Boolean).join(' · ')+'</span>';
+  if(nationality) h+='<span class="chip">'+nationality+'</span>';
+  h+='</div></div><div class="profile-badges">';
+  if(appRound) h+='<span class="badge badge-ed">'+appRound+'</span>';
+  if(tendency) h+='<span class="badge badge-safe">'+tendency+'</span>';
+  if(enrollTerm) h+='<div class="badge-enroll">📅 '+enrollTerm+'</div>';
+  h+='</div></div>';
+
+  // 成绩
+  let scores='';
+  if(gpa) scores+='<div class="score-box"><div class="score-lbl">GPA</div><div class="score-val c-blue">'+gpa+'</div><div class="score-sub">/ '+gpaScale+'</div>'+bar(parseFloat(gpa),parseFloat(gpaScale)||4,'f-blue')+'</div>';
+  if(sat) scores+='<div class="score-box"><div class="score-lbl">SAT 总分</div><div class="score-val c-teal">'+sat+'</div><div class="score-sub">'+(satMath?'数'+satMath+' ':'')+(satEbrw?'文'+satEbrw:'')+'</div>'+bar(parseInt(sat),1600,'f-teal')+'</div>';
+  if(act) scores+='<div class="score-box"><div class="score-lbl">ACT</div><div class="score-val c-teal">'+act+'</div><div class="score-sub">/ 36</div>'+bar(parseInt(act),36,'f-teal')+'</div>';
+  if(toefl) scores+='<div class="score-box"><div class="score-lbl">托福</div><div class="score-val c-amber">'+toefl+'</div><div class="score-sub">'+(toeflSub||'/ 120')+'</div>'+bar(parseInt(toefl),120,'f-amber')+'</div>';
+  if(ielts) scores+='<div class="score-box"><div class="score-lbl">雅思</div><div class="score-val c-amber">'+ielts+'</div><div class="score-sub">/ 9.0</div>'+bar(parseFloat(ielts),9,'f-amber')+'</div>';
+  if(aps.length){const sc2=aps.filter(a=>a.sc);const avg=sc2.length?(sc2.reduce((s,a)=>s+parseInt(a.sc),0)/sc2.length).toFixed(1):'-';scores+='<div class="score-box"><div class="score-lbl">AP 课程</div><div class="score-val c-green">'+aps.length+' 门</div><div class="score-sub">均分 '+avg+'</div>'+bar(aps.length,8,'f-green')+'</div>';}
+  if(satRetake) scores+='<div class="score-box"><div class="score-lbl">SAT 再考</div><div class="score-val c-amber" style="font-size:14px;padding-top:5px">'+satRetake+'</div><div class="score-sub">计划</div></div>';
+  if(scores) h+='<div class="card"><div class="card-sec"><div class="sec-label">成绩概览</div><div class="scores-grid">'+scores+'</div></div></div>';
+
+  // AP
+  if(aps.length){h+='<div class="card"><div class="card-sec"><div class="sec-label">AP 成绩</div><div class="ap-wrap">';aps.forEach(a=>{h+='<div class="ap-chip">'+a.n+(a.sc?' <span class="ap-badge '+apCls(a.sc)+'">'+a.sc+'</span>':'')+'</div>';});h+='</div></div></div>';}
+
+  // 活动
+  h+='<div class="card"><div class="card-sec"><div class="sec-label">课外活动</div>';
+  if(acts.length){acts.forEach((a,i)=>{h+='<div class="act-item"><div class="act-num">'+(i+1)+'</div><div class="act-body">'+(a.type||a.role?'<div class="act-type">'+[a.type,a.role].filter(Boolean).join(' · ')+'</div>':'')+'<div class="act-name">'+(a.name||'未填写名称')+'</div>'+(a.desc?'<div class="act-desc">'+a.desc+'</div>':'')+(a.hrs||a.period?'<div class="act-foot">'+(a.hrs?'<span class="act-ft">⏱ '+a.hrs+'h/周</span>':'')+(a.period?'<span class="act-ft">📅 '+a.period+'</span>':'')+'</div>':'')+'</div></div>';});}
+  else{h+='<div class="warn">⚠️ 活动信息待补充 — 请在信息收集表中完善活动 1–10</div>';}
+  h+='</div></div>';
+
+  // 奖项
+  if(honors.length){h+='<div class="card"><div class="card-sec"><div class="sec-label">荣誉奖项</div><div class="honors-wrap">';honors.forEach(hn=>{h+='<div class="honor-chip"><span>🏆</span><div><div class="honor-name">'+hn.n+'</div>'+(hn.lv||hn.gr?'<div class="honor-sub">'+[hn.lv,hn.gr].filter(Boolean).join(' · ')+'</div>':'')+'</div></div>';});h+='</div></div></div>';}
+
+  // 意向
+  h+='<div class="card"><div class="card-sec"><div class="sec-label">申请意向 & 偏好</div><div class="intent-grid"><div class="intent-box"><div class="intent-lbl">意向专业</div><div class="intent-tags">'+(major1?'<span class="itag">'+major1+'</span>':'')+(major2?'<span class="itag">'+major2+'</span>':'')+(major3?'<span class="itag">'+major3+'</span>':'')+(!major1&&!major2&&!major3?'<span class="itag gray">待填写</span>':'')+'</div></div><div class="intent-box"><div class="intent-lbl">申请策略</div><div class="intent-tags">'+(appRound?'<span class="itag amber">'+appRound+'</span>':'')+(tendency?'<span class="itag teal">'+tendency+'</span>':'')+(enrollTerm?'<span class="itag">'+enrollTerm+'</span>':'')+'</div></div><div class="intent-box"><div class="intent-lbl">地区 & 规模</div><div class="intent-tags"><span class="itag gray">'+(region||'地区不限')+'</span><span class="itag gray">'+(schoolSize||'规模不限')+'</span></div></div><div class="intent-box"><div class="intent-lbl">经济 & 财援</div><div class="intent-tags"><span class="itag gray">'+(budget||'预算待定')+'</span><span class="itag gray">'+(aidNeeded||'财援待定')+'</span></div></div></div>'+(targetSchools?'<div style="margin-top:10px;padding:9px 13px;border-radius:6px;background:var(--blue-light);border:1px solid #bdd5fb;font-size:12px;color:var(--label)">🎯 意向学校：'+targetSchools+'</div>':'')+'</div></div>';
+
+  // 文书
+  h+='<div class="card"><div class="card-sec"><div class="sec-label">文书素材（自述）</div><div class="essay-grid"><div class="essay-box"><div class="essay-q">❓ 最骄傲的事</div><div class="essay-a'+(proudest?'':' empty')+'">'+(proudest||'待填写')+'</div></div><div class="essay-box"><div class="essay-q">🔄 改变你的经历</div><div class="essay-a'+(lifeEvent?'':' empty')+'">'+(lifeEvent||'待填写')+'</div></div><div class="essay-box"><div class="essay-q">🎯 为什么选这个专业</div><div class="essay-a'+(whyMajor?'':' empty')+'">'+(whyMajor||'待填写')+'</div></div><div class="essay-box"><div class="essay-q">✨ 与众不同之处</div><div class="essay-a'+(unique?'':' empty')+'">'+(unique||'待填写')+'</div></div></div></div></div>';
+
+  // 联系
+  h+='<div class="card"><div class="card-sec"><div class="sec-label">联系信息</div><div class="info-grid">'+(wechat?'<div><div class="info-key">微信</div><div class="info-val">'+wechat+'</div></div>':'')+(phone?'<div><div class="info-key">手机</div><div class="info-val">'+phone+'</div></div>':'')+(email?'<div><div class="info-key">邮箱</div><div class="info-val">'+email+'</div></div>':'')+(gender?'<div><div class="info-key">性别</div><div class="info-val">'+gender+'</div></div>':'')+(dob?'<div><div class="info-key">出生日期</div><div class="info-val">'+dob+'</div></div>':'')+(nationality?'<div><div class="info-key">国籍</div><div class="info-val">'+nationality+'</div></div>':'')+'</div>'+(appNotes?'<div class="note-box">📝 申请备注：'+appNotes+'</div>':'')+'<div style="margin-top:8px;font-size:11px;color:var(--muted)">填表时间：'+timestamp+'</div></div></div>';
+
+  h+='</div>';
+  document.getElementById('detail').innerHTML = h;
+  document.getElementById('detail').scrollTop = 0;
 }
 
 loadStudents();
