@@ -1,9 +1,8 @@
 import OpenAI from 'openai';
-import {
-  Document, Packer, Paragraph, Table, TableRow, TableCell,
+import * as docxLib from 'docx';
+const { Document, Packer, Paragraph, Table, TableRow, TableCell,
   TextRun, AlignmentType, WidthType, BorderStyle,
-  ShadingType, TableLayoutType, HeadingLevel
-} from 'docx';
+  ShadingType, TableLayoutType } = docxLib;
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
