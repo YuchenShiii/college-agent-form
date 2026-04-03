@@ -313,18 +313,28 @@ async function generateRec(idx, btn) {
       body: JSON.stringify(allStudents[idx]),
     });
     if (!res.ok) {
-      const err = await res.json().catch(()=>({error:'未知错误'}));
+      const err = await res.json().catch(() => ({ error: '未知错误' }));
       throw new Error(err.error || '生成失败');
     }
-    const blob = await res.blob();
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = (v(allStudents[idx]['中文姓名']) || 'student') + '_定校建议.docx';
-    a.click();
-    URL.revokeObjectURL(url);
-    btn.textContent = '✅ 已下载';
-    setTimeout(() => { btn.textContent = '🎯 生成定校建议'; btn.disabled = false; }, 3000);
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error);
+
+    // 下载学生版和顾问版
+    const dl = (b64, filename) => {
+      const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+      const blob = new Blob([bytes], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    };
+
+    dl(data.studentDoc, data.filename + '_定校建议（学生版）.docx');
+    setTimeout(() => dl(data.advisorDoc, data.filename + '_定校建议（顾问版）.docx'), 800);
+
+    btn.textContent = '✅ 已下载两个文件';
+    setTimeout(() => { btn.textContent = '🎯 生成定校建议'; btn.disabled = false; }, 4000);
   } catch(e) {
     alert('生成失败：' + e.message);
     btn.textContent = '🎯 生成定校建议';
