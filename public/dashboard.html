@@ -330,8 +330,8 @@ async function generateRec(idx, btn) {
       URL.revokeObjectURL(a.href);
     };
 
-    dl(data.studentDoc, data.filename + '_定校建议（学生版）.docx');
-    setTimeout(() => dl(data.advisorDoc, data.filename + '_定校建议（顾问版）.docx'), 800);
+    dl(data.studentDoc, data.filename + '_定校建议（学生版）.doc');
+    setTimeout(() => dl(data.advisorDoc, data.filename + '_定校建议（顾问版）.doc'), 800);
 
     btn.textContent = '✅ 已下载两个文件';
     setTimeout(() => { btn.textContent = '🎯 生成定校建议'; btn.disabled = false; }, 4000);
