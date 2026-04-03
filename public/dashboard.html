@@ -119,6 +119,9 @@
     .info-val { font-size: 13px; }
     .warn { font-size: 11px; color: #92400e; padding: 8px 11px; border-radius: 6px; background: #fffbeb; border: 1px solid #fcd34d; }
     .note-box { padding: 9px 13px; border-radius: 6px; background: var(--blue-light); border: 1px solid #bdd5fb; font-size: 12px; color: var(--label); margin-top: 10px; }
+    .rec-btn { display: inline-flex; align-items: center; gap: 5px; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid var(--blue); background: var(--blue); color: #fff; }
+    .rec-btn:hover { background: var(--blue-dark); border-color: var(--blue-dark); }
+    .rec-btn:disabled { opacity: 0.6; cursor: not-allowed; }
     .delete-btn { display: inline-flex; align-items: center; gap: 5px; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid #fca5a5; background: #fef2f2; color: #dc2626; }
     .delete-btn:hover { background: #fee2e2; }
     .confirm-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 200; display: flex; align-items: center; justify-content: center; }
@@ -245,9 +248,9 @@ function renderDetail(s, idx) {
   const proudest = v(s['最骄傲的事']), lifeEvent = v(s['改变你的经历']), whyMajor = v(s['为什么选这个专业']), unique = v(s['与众不同之处']);
   const timestamp = v(s['时间戳']);
 
-  const aps = [];
+  const aps=[];
   for(let i=1;i<=8;i++){const n=v(s['AP'+i+'课程']),sc=v(s['AP'+i+'分数']);if(n)aps.push({n,sc});}
-  const acts = [];
+  const acts=[];
   for(let i=1;i<=10;i++){const type=v(s['活动'+i+'类别']),role=v(s['活动'+i+'职位']),name=v(s['活动'+i+'名称']),desc=v(s['活动'+i+'描述']),hrs=v(s['活动'+i+'每周时长']),period=v(s['活动'+i+'时间段']);if(name||type)acts.push({type,role,name,desc,hrs,period});}
   const honors=[];
   for(let i=1;i<=5;i++){const n=v(s['奖项'+i+'名称']),lv=v(s['奖项'+i+'级别']),gr=v(s['奖项'+i+'年级']);if(n)honors.push({n,lv,gr});}
@@ -255,57 +258,78 @@ function renderDetail(s, idx) {
   function bar(val,max,cls){return '<div class="score-bar"><div class="score-fill '+cls+'" style="width:'+Math.min(Math.round(val/max*100),100)+'%"></div></div>';}
   function apCls(sc){const n=parseInt(sc);return n>=5?'ap-5':n>=4?'ap-4':n>=3?'ap-3':'ap-x';}
 
-  let h = '<div class="detail-inner">';
+  let h='<div class="detail-inner">';
 
-  // Header
-  h += '<div class="profile-header"><div class="profile-avatar">'+nameCN.charAt(0)+'</div><div class="profile-info"><div class="profile-name">'+nameCN+(nameEN?' <span class="profile-name-en">'+nameEN+'</span>':'')+'</div><div class="profile-chips">';
-  if(grade||gradYear) h+='<span class="chip blue">'+(grade||'')+(gradYear?' · '+gradYear+'届':'')+'</span>';
-  if(school) h+='<span class="chip teal">'+school+'</span>';
-  if(schoolType||city) h+='<span class="chip">'+[schoolType,city].filter(Boolean).join(' · ')+'</span>';
-  if(major1) h+='<span class="chip purple">'+major1+' 志向</span>';
-  if(gender||dob) h+='<span class="chip">'+[gender,dob].filter(Boolean).join(' · ')+'</span>';
-  if(nationality) h+='<span class="chip">'+nationality+'</span>';
+  h+='<div class="profile-header"><div class="profile-avatar">'+nameCN.charAt(0)+'</div><div class="profile-info"><div class="profile-name">'+nameCN+(nameEN?' <span class="profile-name-en">'+nameEN+'</span>':'')+'</div><div class="profile-chips">';
+  if(grade||gradYear)h+='<span class="chip blue">'+(grade||'')+(gradYear?' · '+gradYear+'届':'')+'</span>';
+  if(school)h+='<span class="chip teal">'+school+'</span>';
+  if(schoolType||city)h+='<span class="chip">'+[schoolType,city].filter(Boolean).join(' · ')+'</span>';
+  if(major1)h+='<span class="chip purple">'+major1+' 志向</span>';
+  if(gender||dob)h+='<span class="chip">'+[gender,dob].filter(Boolean).join(' · ')+'</span>';
+  if(nationality)h+='<span class="chip">'+nationality+'</span>';
   h+='</div></div><div class="profile-badges">';
-  if(appRound) h+='<span class="badge badge-ed">'+appRound+'</span>';
-  if(tendency) h+='<span class="badge badge-safe">'+tendency+'</span>';
-  if(enrollTerm) h+='<div class="badge-enroll">📅 '+enrollTerm+'</div>';
+  if(appRound)h+='<span class="badge badge-ed">'+appRound+'</span>';
+  if(tendency)h+='<span class="badge badge-safe">'+tendency+'</span>';
+  if(enrollTerm)h+='<div class="badge-enroll">📅 '+enrollTerm+'</div>';
   h+='</div></div>';
 
-  // 成绩
   let scores='';
-  if(gpa) scores+='<div class="score-box"><div class="score-lbl">GPA</div><div class="score-val c-blue">'+gpa+'</div><div class="score-sub">/ '+gpaScale+'</div>'+bar(parseFloat(gpa),parseFloat(gpaScale)||4,'f-blue')+'</div>';
-  if(sat) scores+='<div class="score-box"><div class="score-lbl">SAT 总分</div><div class="score-val c-teal">'+sat+'</div><div class="score-sub">'+(satMath?'数'+satMath+' ':'')+(satEbrw?'文'+satEbrw:'')+'</div>'+bar(parseInt(sat),1600,'f-teal')+'</div>';
-  if(act) scores+='<div class="score-box"><div class="score-lbl">ACT</div><div class="score-val c-teal">'+act+'</div><div class="score-sub">/ 36</div>'+bar(parseInt(act),36,'f-teal')+'</div>';
-  if(toefl) scores+='<div class="score-box"><div class="score-lbl">托福</div><div class="score-val c-amber">'+toefl+'</div><div class="score-sub">'+(toeflSub||'/ 120')+'</div>'+bar(parseInt(toefl),120,'f-amber')+'</div>';
-  if(ielts) scores+='<div class="score-box"><div class="score-lbl">雅思</div><div class="score-val c-amber">'+ielts+'</div><div class="score-sub">/ 9.0</div>'+bar(parseFloat(ielts),9,'f-amber')+'</div>';
+  if(gpa)scores+='<div class="score-box"><div class="score-lbl">GPA</div><div class="score-val c-blue">'+gpa+'</div><div class="score-sub">/ '+gpaScale+'</div>'+bar(parseFloat(gpa),parseFloat(gpaScale)||4,'f-blue')+'</div>';
+  if(sat)scores+='<div class="score-box"><div class="score-lbl">SAT 总分</div><div class="score-val c-teal">'+sat+'</div><div class="score-sub">'+(satMath?'数'+satMath+' ':'')+(satEbrw?'文'+satEbrw:'')+'</div>'+bar(parseInt(sat),1600,'f-teal')+'</div>';
+  if(act)scores+='<div class="score-box"><div class="score-lbl">ACT</div><div class="score-val c-teal">'+act+'</div><div class="score-sub">/ 36</div>'+bar(parseInt(act),36,'f-teal')+'</div>';
+  if(toefl)scores+='<div class="score-box"><div class="score-lbl">托福</div><div class="score-val c-amber">'+toefl+'</div><div class="score-sub">'+(toeflSub||'/ 120')+'</div>'+bar(parseInt(toefl),120,'f-amber')+'</div>';
+  if(ielts)scores+='<div class="score-box"><div class="score-lbl">雅思</div><div class="score-val c-amber">'+ielts+'</div><div class="score-sub">/ 9.0</div>'+bar(parseFloat(ielts),9,'f-amber')+'</div>';
   if(aps.length){const sc2=aps.filter(a=>a.sc);const avg=sc2.length?(sc2.reduce((s,a)=>s+parseInt(a.sc),0)/sc2.length).toFixed(1):'-';scores+='<div class="score-box"><div class="score-lbl">AP 课程</div><div class="score-val c-green">'+aps.length+' 门</div><div class="score-sub">均分 '+avg+'</div>'+bar(aps.length,8,'f-green')+'</div>';}
-  if(satRetake) scores+='<div class="score-box"><div class="score-lbl">SAT 再考</div><div class="score-val c-amber" style="font-size:14px;padding-top:5px">'+satRetake+'</div><div class="score-sub">计划</div></div>';
-  if(scores) h+='<div class="card"><div class="card-sec"><div class="sec-label">成绩概览</div><div class="scores-grid">'+scores+'</div></div></div>';
+  if(satRetake)scores+='<div class="score-box"><div class="score-lbl">SAT 再考</div><div class="score-val c-amber" style="font-size:14px;padding-top:5px">'+satRetake+'</div><div class="score-sub">计划</div></div>';
+  if(scores)h+='<div class="card"><div class="card-sec"><div class="sec-label">成绩概览</div><div class="scores-grid">'+scores+'</div></div></div>';
 
-  // AP
   if(aps.length){h+='<div class="card"><div class="card-sec"><div class="sec-label">AP 成绩</div><div class="ap-wrap">';aps.forEach(a=>{h+='<div class="ap-chip">'+a.n+(a.sc?' <span class="ap-badge '+apCls(a.sc)+'">'+a.sc+'</span>':'')+'</div>';});h+='</div></div></div>';}
 
-  // 活动
   h+='<div class="card"><div class="card-sec"><div class="sec-label">课外活动</div>';
   if(acts.length){acts.forEach((a,i)=>{h+='<div class="act-item"><div class="act-num">'+(i+1)+'</div><div class="act-body">'+(a.type||a.role?'<div class="act-type">'+[a.type,a.role].filter(Boolean).join(' · ')+'</div>':'')+'<div class="act-name">'+(a.name||'未填写名称')+'</div>'+(a.desc?'<div class="act-desc">'+a.desc+'</div>':'')+(a.hrs||a.period?'<div class="act-foot">'+(a.hrs?'<span class="act-ft">⏱ '+a.hrs+'h/周</span>':'')+(a.period?'<span class="act-ft">📅 '+a.period+'</span>':'')+'</div>':'')+'</div></div>';});}
-  else{h+='<div class="warn">⚠️ 活动信息待补充 — 请在信息收集表中完善活动 1–10</div>';}
+  else{h+='<div class="warn">⚠️ 活动信息待补充</div>';}
   h+='</div></div>';
 
-  // 奖项
   if(honors.length){h+='<div class="card"><div class="card-sec"><div class="sec-label">荣誉奖项</div><div class="honors-wrap">';honors.forEach(hn=>{h+='<div class="honor-chip"><span>🏆</span><div><div class="honor-name">'+hn.n+'</div>'+(hn.lv||hn.gr?'<div class="honor-sub">'+[hn.lv,hn.gr].filter(Boolean).join(' · ')+'</div>':'')+'</div></div>';});h+='</div></div></div>';}
 
-  // 意向
   h+='<div class="card"><div class="card-sec"><div class="sec-label">申请意向 & 偏好</div><div class="intent-grid"><div class="intent-box"><div class="intent-lbl">意向专业</div><div class="intent-tags">'+(major1?'<span class="itag">'+major1+'</span>':'')+(major2?'<span class="itag">'+major2+'</span>':'')+(major3?'<span class="itag">'+major3+'</span>':'')+(!major1&&!major2&&!major3?'<span class="itag gray">待填写</span>':'')+'</div></div><div class="intent-box"><div class="intent-lbl">申请策略</div><div class="intent-tags">'+(appRound?'<span class="itag amber">'+appRound+'</span>':'')+(tendency?'<span class="itag teal">'+tendency+'</span>':'')+(enrollTerm?'<span class="itag">'+enrollTerm+'</span>':'')+'</div></div><div class="intent-box"><div class="intent-lbl">地区 & 规模</div><div class="intent-tags"><span class="itag gray">'+(region||'地区不限')+'</span><span class="itag gray">'+(schoolSize||'规模不限')+'</span></div></div><div class="intent-box"><div class="intent-lbl">经济 & 财援</div><div class="intent-tags"><span class="itag gray">'+(budget||'预算待定')+'</span><span class="itag gray">'+(aidNeeded||'财援待定')+'</span></div></div></div>'+(targetSchools?'<div style="margin-top:10px;padding:9px 13px;border-radius:6px;background:var(--blue-light);border:1px solid #bdd5fb;font-size:12px;color:var(--label)">🎯 意向学校：'+targetSchools+'</div>':'')+'</div></div>';
 
-  // 文书
   h+='<div class="card"><div class="card-sec"><div class="sec-label">文书素材（自述）</div><div class="essay-grid"><div class="essay-box"><div class="essay-q">❓ 最骄傲的事</div><div class="essay-a'+(proudest?'':' empty')+'">'+(proudest||'待填写')+'</div></div><div class="essay-box"><div class="essay-q">🔄 改变你的经历</div><div class="essay-a'+(lifeEvent?'':' empty')+'">'+(lifeEvent||'待填写')+'</div></div><div class="essay-box"><div class="essay-q">🎯 为什么选这个专业</div><div class="essay-a'+(whyMajor?'':' empty')+'">'+(whyMajor||'待填写')+'</div></div><div class="essay-box"><div class="essay-q">✨ 与众不同之处</div><div class="essay-a'+(unique?'':' empty')+'">'+(unique||'待填写')+'</div></div></div></div></div>';
 
-  // 联系 + 删除
-  h+='<div class="card"><div class="card-sec"><div class="sec-label">联系信息</div><div class="info-grid">'+(wechat?'<div><div class="info-key">微信</div><div class="info-val">'+wechat+'</div></div>':'')+(phone?'<div><div class="info-key">手机</div><div class="info-val">'+phone+'</div></div>':'')+(email?'<div><div class="info-key">邮箱</div><div class="info-val">'+email+'</div></div>':'')+(gender?'<div><div class="info-key">性别</div><div class="info-val">'+gender+'</div></div>':'')+(dob?'<div><div class="info-key">出生日期</div><div class="info-val">'+dob+'</div></div>':'')+(nationality?'<div><div class="info-key">国籍</div><div class="info-val">'+nationality+'</div></div>':'')+'</div>'+(appNotes?'<div class="note-box">📝 申请备注：'+appNotes+'</div>':'')+'<div style="margin-top:8px;font-size:11px;color:var(--muted)">填表时间：'+timestamp+'</div><div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border)"><button class="delete-btn" onclick="confirmDelete('+idx+', \''+nameCN+'\')">🗑 删除此学生</button></div></div></div>';
+  h+='<div class="card"><div class="card-sec"><div class="sec-label">联系信息</div><div class="info-grid">'+(wechat?'<div><div class="info-key">微信</div><div class="info-val">'+wechat+'</div></div>':'')+(phone?'<div><div class="info-key">手机</div><div class="info-val">'+phone+'</div></div>':'')+(email?'<div><div class="info-key">邮箱</div><div class="info-val">'+email+'</div></div>':'')+(gender?'<div><div class="info-key">性别</div><div class="info-val">'+gender+'</div></div>':'')+(dob?'<div><div class="info-key">出生日期</div><div class="info-val">'+dob+'</div></div>':'')+(nationality?'<div><div class="info-key">国籍</div><div class="info-val">'+nationality+'</div></div>':'')+'</div>'+(appNotes?'<div class="note-box">📝 申请备注：'+appNotes+'</div>':'')+'<div style="margin-top:8px;font-size:11px;color:var(--muted)">填表时间：'+timestamp+'</div><div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);display:flex;gap:10px;align-items:center"><button class="rec-btn" id="rec-btn-'+idx+'" onclick="generateRec('+idx+', this)">🎯 生成定校建议</button><button class="delete-btn" onclick="confirmDelete('+idx+', \''+nameCN+'\')">🗑 删除此学生</button></div></div></div>';
 
   h+='</div>';
   document.getElementById('detail').innerHTML = h;
   document.getElementById('detail').scrollTop = 0;
+}
+
+async function generateRec(idx, btn) {
+  btn.disabled = true;
+  btn.textContent = '⏳ AI 分析中，约30秒...';
+  try {
+    const res = await fetch('/api/recommend', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(allStudents[idx]),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(()=>({error:'未知错误'}));
+      throw new Error(err.error || '生成失败');
+    }
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = (v(allStudents[idx]['中文姓名']) || 'student') + '_定校建议.docx';
+    a.click();
+    URL.revokeObjectURL(url);
+    btn.textContent = '✅ 已下载';
+    setTimeout(() => { btn.textContent = '🎯 生成定校建议'; btn.disabled = false; }, 3000);
+  } catch(e) {
+    alert('生成失败：' + e.message);
+    btn.textContent = '🎯 生成定校建议';
+    btn.disabled = false;
+  }
 }
 
 function confirmDelete(idx, name) {
