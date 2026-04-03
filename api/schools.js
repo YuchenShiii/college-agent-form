@@ -70,7 +70,7 @@ export default async function handler(req, res) {
       const allRows = existing.data.values || [];
       const headers = allRows[0] || ['学生邮箱','中文姓名','学校英文名','学校中文名','类别','申请方式','状态','录入时间','录入人'];
 
-      // 过滤掉该学生的旧记录，保留其他学生
+      // 过滤掉该学生旧记录
       const otherRows = allRows.slice(1).filter(row => (row[0]||'').trim() !== studentEmail.trim());
 
       // 新记录
@@ -86,18 +86,24 @@ export default async function handler(req, res) {
         operator || '顾问',
       ]);
 
-      // 合并：表头 + 其他学生 + 该学生新记录
       const finalRows = [headers, ...otherRows, ...newRows];
 
-      // 整体覆盖写回
-      await sheets.spreadsheets.values.update({
+      // 先 clear 整个 sheet（保留表头行以外全清）
+      await sheets.spreadsheets.values.clear({
         spreadsheetId,
-        range: 'schools!A1',
-        valueInputOption: 'RAW',
-        requestBody: { values: finalRows },
+        range: 'schools!A2:I10000',
       });
 
-      // 写日志
+      // 再写回
+      if (finalRows.length > 1) {
+        await sheets.spreadsheets.values.update({
+          spreadsheetId,
+          range: 'schools!A1',
+          valueInputOption: 'RAW',
+          requestBody: { values: finalRows },
+        });
+      }
+
       await writeLog(sheets, spreadsheetId, {
         operator: operator || '顾问',
         operatorType: '顾问',
